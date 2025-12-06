@@ -2,7 +2,6 @@ import 'package:barsel_ecommerce_flutter_application_alter/app/data/services/ite
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 class HomeController extends GetxController {
   final isLogin = false.obs;
@@ -50,8 +49,6 @@ class HomeController extends GetxController {
         page: currentProductPage.value,
       );
 
-      print(result);
-
       if (result['status'] == true) {
         products.assignAll(result['data']);
         totalProductPage.value = result['total_page'];
@@ -83,7 +80,7 @@ class HomeController extends GetxController {
         products.addAll(result['data']);
       }
     } catch (e) {
-      print("Error loading more: $e");
+      Get.snackbar('Error', '$e', backgroundColor: Colors.red);
     } finally {
       isLoadingMoreProducts.value = false;
     }
@@ -106,7 +103,5 @@ class HomeController extends GetxController {
     prefs.clear();
 
     isLogin.value = false;
-
-    Phoenix.rebirth(Get.context!);
   }
 }

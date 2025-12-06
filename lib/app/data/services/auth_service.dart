@@ -43,7 +43,6 @@ class AuthService {
         return {'status': false};
       }
     } catch (e) {
-      print('$e');
       throw Exception('Error from services class | Error : $e');
     }
   }

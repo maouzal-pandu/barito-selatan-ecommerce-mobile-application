@@ -19,11 +19,12 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
             ? const Center(
                 child: CircularProgressIndicator(color: Colors.amber),
               )
-            : CustomScrollView(
+            : SingleChildScrollView(
                 controller: controller.scrollController,
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Stack(
+                child: Column(
+                  children: [
+                    // Product images
+                    Stack(
                       children: [
                         // Product images
                         controller.productImages.length > 1
@@ -72,6 +73,7 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                             ),
                           ),
                         ),
+
                         // Product image indicator
                         Positioned(
                           left: 0,
@@ -101,17 +103,16 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                         ),
                       ],
                     ),
-                  ),
 
-                  // Item name, price
-                  SliverToBoxAdapter(
-                    child: Container(
+                    // Product name, price, wish list feature, and variant
+                    Container(
                       color: const Color(0xFFFFFFFF),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Product price and wish list button
                             Row(
                               children: [
                                 Text(
@@ -132,11 +133,19 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
 
                                 const Spacer(),
 
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.favorite_outline_rounded,
-                                    color: Colors.amber,
+                                Obx(
+                                  () => IconButton(
+                                    onPressed: () =>
+                                        controller.addRemoveProductWishlist(),
+                                    icon: controller.isInWishlist.value
+                                        ? Icon(
+                                            Icons.favorite_rounded,
+                                            color: Colors.amber,
+                                          )
+                                        : Icon(
+                                            Icons.favorite_outline_rounded,
+                                            color: Colors.amber,
+                                          ),
                                   ),
                                 ),
                               ],
@@ -144,43 +153,174 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
 
                             // Item name
                             Text(controller.data['nama_produk']),
+
+                            const SizedBox(height: 15),
                           ],
                         ),
                       ),
                     ),
-                  ),
 
-                  // Margin sizedBox
-                  SliverToBoxAdapter(child: const SizedBox(height: 10)),
+                    const SizedBox(height: 10),
 
-                  // Product description
-                  SliverToBoxAdapter(
-                    child: // Description tile
+                    // Product description and information
                     Container(
                       color: const Color(0xFFFFFFFF),
-                      child: ExpansionTile(
-                        title: const Text('Deskripsi'),
-                        shape: Border(),
+                      child: Column(
                         children: [
+                          Align(
+                            alignment: AlignmentGeometry.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8.0,
+                                horizontal: 16,
+                              ),
+                              child: const Text(
+                                'Spesifikasi & Deskripsi',
+                                style: TextStyle(
+                                  fontSize: 14.5,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(controller.data['tentang_produk']),
+                            padding: const EdgeInsets.all(16),
+                            child: Table(
+                              children: [
+                                TableRow(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0,
+                                      ),
+                                      child: const Text(
+                                        'Berat',
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ),
+
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0,
+                                      ),
+                                      child: Text(
+                                        controller.data['berat'] == '' ||
+                                                controller.data['berat'] == null
+                                            ? '-'
+                                            : controller.data['berat'],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                TableRow(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0,
+                                      ),
+                                      child: const Text(
+                                        'Jenis Produk',
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ),
+
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0,
+                                      ),
+                                      child: Text(
+                                        controller.data['jenis_produk'] == '' ||
+                                                controller
+                                                        .data['jenis_produk'] ==
+                                                    null
+                                            ? '-'
+                                            : controller.data['jenis_produk'] ??
+                                                  '-',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                TableRow(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0,
+                                      ),
+                                      child: const Text(
+                                        'Satuan',
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ),
+
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0,
+                                      ),
+                                      child: Text(
+                                        controller.data['satuan'] == '' ||
+                                                controller.data['satuan'] ==
+                                                    null
+                                            ? '-'
+                                            : controller.data['satuan'],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          controller.data['tentang_produk'] == '' ||
+                                  controller.data['tentang_produk'] == null
+                              ? const SizedBox.shrink()
+                              : const SizedBox(
+                                  width: double.infinity,
+                                  child: Divider(
+                                    color: Colors.grey,
+                                    indent: 16,
+                                    endIndent: 16,
+                                  ),
+                                ),
+
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Align(
+                              alignment: AlignmentGeometry.centerLeft,
+                              child: Text(
+                                controller.data['tentang_produk'],
+                                style: TextStyle(fontSize: 14.5),
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ),
 
-                  // Margin sizedbox
-                  SliverToBoxAdapter(child: const SizedBox(height: 10)),
+                    const SizedBox(height: 10),
 
-                  // Product reviews
-                  SliverToBoxAdapter(
-                    child: // Reviews tile
+                    // Product reviews
                     Container(
                       color: const Color(0xFFFFFFFF),
                       child: ExpansionTile(
-                        title: const Text('Ulasan'),
+                        title: Row(
+                          children: [
+                            const Text(
+                              'Ulasan',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.5,
+                              ),
+                            ),
+
+                            Text(
+                              ' (${controller.reviews.length})',
+                              style: TextStyle(fontSize: 14.5),
+                            ),
+                          ],
+                        ),
                         shape: Border(),
                         children: [
                           Obx(() {
@@ -269,14 +409,11 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                         ],
                       ),
                     ),
-                  ),
 
-                  // Margin sizedbox
-                  SliverToBoxAdapter(child: const SizedBox(height: 10)),
+                    const SizedBox(height: 10),
 
-                  // Store container
-                  SliverToBoxAdapter(
-                    child: Container(
+                    // Store
+                    Container(
                       color: const Color(0xFFFFFFFF),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -295,9 +432,14 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                                     radius: 20, // ukuran avatar
                                     backgroundColor: Colors.grey[200],
                                     child:
-                                        !controller.storeData['foto'].endsWith(
-                                          'null',
-                                        )
+                                        controller
+                                                .storeProfilePicture
+                                                .value
+                                                .isNotEmpty &&
+                                            !controller
+                                                .storeProfilePicture
+                                                .value
+                                                .endsWith('null')
                                         ? ClipOval(
                                             child: Image.network(
                                               controller.storeData['foto'],
@@ -379,14 +521,9 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                         ),
                       ),
                     ),
-                  ),
 
-                  // Margin sizedbox
-                  SliverToBoxAdapter(child: const SizedBox(height: 10)),
-
-                  // Related products
-                  SliverToBoxAdapter(
-                    child: Container(
+                    // Related products
+                    Container(
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(16),
@@ -489,69 +626,64 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                                             ),
                                           ),
                                         ),
-                                        Container(
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                              left: 8.0,
-                                              right: 8,
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              // mainAxisAlignment:
-                                              // MainAxisAlignment.spaceAround,
-                                              children: [
-                                                const SizedBox(height: 2.5),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: 8.0,
+                                            right: 8,
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            // mainAxisAlignment:
+                                            // MainAxisAlignment.spaceAround,
+                                            children: [
+                                              const SizedBox(height: 2.5),
 
-                                                Text(
-                                                  item['nama_produk'] ?? '-',
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                  ),
+                                              Text(
+                                                item['nama_produk'] ?? '-',
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+
+                                              const SizedBox(height: 5),
+
+                                              Text(
+                                                NumberFormat.currency(
+                                                  locale: 'id_ID',
+                                                  symbol: 'Rp',
+                                                ).format(
+                                                  int.tryParse(
+                                                        item['harga_konsumen'],
+                                                      ) ??
+                                                      0,
                                                 ),
-
-                                                const SizedBox(height: 5),
-
-                                                Text(
-                                                  NumberFormat.currency(
-                                                    locale: 'id_ID',
-                                                    symbol: 'Rp',
-                                                  ).format(
-                                                    int.tryParse(
-                                                          item['harga_konsumen'],
-                                                        ) ??
-                                                        0,
-                                                  ),
-                                                  style: TextStyle(
-                                                    color: Colors.amber[900],
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
+                                                style: TextStyle(
+                                                  color: Colors.amber[900],
+                                                  fontWeight: FontWeight.w600,
                                                 ),
+                                              ),
 
-                                                const SizedBox(height: 5),
+                                              const SizedBox(height: 5),
 
-                                                Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.pin_drop_rounded,
-                                                      size: 12,
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.pin_drop_rounded,
+                                                    size: 12,
+                                                    color: Colors.grey[700],
+                                                  ),
+                                                  Text(
+                                                    item['subdistrict_name'] ??
+                                                        '',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
                                                       color: Colors.grey[700],
                                                     ),
-                                                    Text(
-                                                      item['subdistrict_name'] ??
-                                                          '',
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.grey[700],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
@@ -564,8 +696,8 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
       ),
 

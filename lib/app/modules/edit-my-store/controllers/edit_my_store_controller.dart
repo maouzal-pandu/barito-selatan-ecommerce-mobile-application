@@ -55,7 +55,6 @@ class EditMyStoreController extends GetxController {
         // update store
         try {
           // print('update store');
-          print(isUpdate);
           isLoading.value = true;
           final response = await _storeServices.updateStore(
             resellerId.value,
@@ -113,8 +112,6 @@ class EditMyStoreController extends GetxController {
         }
       } else {
         // create store
-        print('create store');
-        print(isUpdate);
 
         final prefs = await SharedPreferences.getInstance();
         final userId = prefs.getString('id_user')!;
@@ -150,7 +147,6 @@ class EditMyStoreController extends GetxController {
           }
         } catch (e) {
           Get.snackbar('Gagal', '$e', backgroundColor: Colors.redAccent);
-          print('$e');
         } finally {
           isLoading.value = false;
         } // Debug // print('create store'); // print(profilePicture.value); // print(storeNameController.text); // print(provinceId.value); // print(subdistrictId.value); // print(cityId.value); // print(storeAddressController.text); // print(storePhoneNumberController.text); // print(bankNameController.text); // print(bankNumberController.text); // print(bankOwnerController.text); // print(storeAboutController.text);

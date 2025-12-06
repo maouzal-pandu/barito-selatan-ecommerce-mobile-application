@@ -10,7 +10,6 @@ class MyStoreView extends GetView<MyStoreController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Toko Saya'), centerTitle: true),
       body: Obx(
         () => controller.isLogin.value == false
             ? _buildNotLogin()
@@ -28,24 +27,51 @@ class MyStoreView extends GetView<MyStoreController> {
   // =======================
   Widget _buildNotLogin() {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/images/login_first_vector.png', height: 250),
-            const SizedBox(height: 20),
-            const Text(
-              'Silahkan login atau daftar terlebih dahulu untuk menggunakan fitur ini',
-              style: TextStyle(fontSize: 18),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            FilledButton(
-              onPressed: () => Get.toNamed('/login'),
-              child: const Text('Login'),
-            ),
-          ],
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              // Color(0xFFFFF8E1), // Amber 50 (sangat muda)
+              Color(0xFFFFECB3), // Amber 100
+              Color(0xFFFFD54F), // Amber 300
+              Color(0xFFFFB300), // Amber 600 (lebih kuat)
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/images/login_first_vector.png',
+                width: 300,
+                height: 300,
+              ),
+
+              Text(
+                'Silahkan login atau daftar terlebih dahulu untuk menggunakan fitur ini',
+                style: const TextStyle(fontSize: 15),
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 30),
+
+              // login filled button
+              FilledButton(
+                onPressed: () => Get.toNamed('/login'),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(Colors.green),
+                ),
+                child: const Text(
+                  'Login',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

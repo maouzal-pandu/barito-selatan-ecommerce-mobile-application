@@ -45,10 +45,8 @@ class ItemsService {
         return {"status": false, 'message': 'Failed to fetch products.'};
       }
     } on TimeoutException {
-      print('Connection Timeout');
       return {'status': 'false'};
     } catch (e) {
-      print('$e');
       throw Exception("Error products : $e");
     }
   }
@@ -75,7 +73,12 @@ class ItemsService {
       final List<Map<String, dynamic>> products =
           List<Map<String, dynamic>>.from(data['data']);
 
-      return {'status': true, 'total': data['total'], 'data': products};
+      return {
+        'status': true,
+        'total': data['total'],
+        'total_pages': data['total_pages'],
+        'data': products,
+      };
     } catch (e) {
       throw Exception('Something is wrong :( | error : $e)');
     }
@@ -94,7 +97,6 @@ class ItemsService {
 
       return {'status': false};
     } catch (e) {
-      print(e);
       throw Exception('Something wrong when load product :( | error : $e)');
     }
   }
@@ -117,6 +119,50 @@ class ItemsService {
       return {'status': false};
     } catch (e) {
       throw Exception('Failed to fetch reviews : $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> addRemoveProductWishlist(
+    String productId,
+    String consumerId,
+  ) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$url/addRemoveWishlist'),
+        body: {'product_id': productId, 'consumer_id': consumerId},
+      );
+
+      final decodedJson = jsonDecode(response.body);
+
+      if (decodedJson['status'] == true) {
+        return {'status': true, 'message': decodedJson['message']};
+      } else {
+        return {'status': false, 'message': decodedJson['message']};
+      }
+    } catch (e) {
+      throw Exception('Error from ItemService class | error : $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> productWishlistCheck(
+    String productId,
+    String consumerId,
+  ) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$url/productWishlistCheck'),
+        body: {'consumer_id': consumerId, 'product_id': productId},
+      );
+
+      final decodedJson = jsonDecode(response.body);
+
+      if (decodedJson['status'] == true) {
+        return {'status': true};
+      } else {
+        return {'status': false};
+      }
+    } catch (e) {
+      throw Exception('Error from ItemService class | error : $e');
     }
   }
 }

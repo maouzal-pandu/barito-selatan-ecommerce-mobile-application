@@ -189,37 +189,40 @@ class UserAccountView extends GetView<UserAccountController> {
                         ),
                       ),
                     )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/images/login_first_vector.png',
-                          width: 300,
-                          height: 300,
-                        ),
+                  : Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/images/login_first_vector.png',
+                            width: 300,
+                            height: 300,
+                          ),
 
-                        Text(
-                          'Silahkan login atau daftar terlebih dahulu untuk menggunakan fitur ini',
-                          style: const TextStyle(fontSize: 15),
-                          textAlign: TextAlign.center,
-                        ),
+                          Text(
+                            'Silahkan login atau daftar terlebih dahulu untuk menggunakan fitur ini',
+                            style: const TextStyle(fontSize: 15),
+                            textAlign: TextAlign.center,
+                          ),
 
-                        const SizedBox(height: 30),
+                          const SizedBox(height: 30),
 
-                        // login filled button
-                        FilledButton(
-                          onPressed: () => Get.toNamed('/login'),
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStatePropertyAll(
-                              Colors.amber[600],
+                          // login filled button
+                          FilledButton(
+                            onPressed: () => Get.toNamed('/login'),
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStatePropertyAll(
+                                Colors.green,
+                              ),
+                            ),
+                            child: const Text(
+                              'Login',
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
             ),
           ),

@@ -26,7 +26,6 @@ class StoreController extends GetxController {
       final response = await _storeService.fetchStore(resellerId.value);
 
       if (response['status'] == true) {
-        print(response);
         resellerInformation.assignAll(response['data']);
       } else {
         Get.snackbar(

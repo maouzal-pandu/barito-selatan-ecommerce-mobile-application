@@ -64,7 +64,6 @@ class EditProfileController extends GetxController {
           prefs.setString('date_of_birth', birthDateController.text);
           prefs.setString('subdistrict', subdistrictId.value);
           prefs.setString('profile_picture', profilePicture.value);
-          print(profilePicture.value);
 
           // switch (selectedSubdistrict.value) {
           //   case '641':
@@ -115,7 +114,7 @@ class EditProfileController extends GetxController {
         // print(selectedCity.value);
         // print(selectedSubdistrict.value);
       } catch (e) {
-        print(e.toString());
+        Get.snackbar('Error', '$e', backgroundColor: Colors.red);
       } finally {}
 
       // print(fullnameController.text);

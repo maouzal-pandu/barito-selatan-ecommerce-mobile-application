@@ -22,6 +22,8 @@ import '../modules/product-details/bindings/product_details_binding.dart';
 import '../modules/product-details/views/product_details_view.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
+import '../modules/search_view/bindings/search_view_binding.dart';
+import '../modules/search_view/views/search_view_view.dart';
 import '../modules/settings/bindings/settings_binding.dart';
 import '../modules/settings/views/settings_view.dart';
 import '../modules/store/bindings/store_binding.dart';
@@ -122,6 +124,11 @@ class AppPages {
       name: _Paths.STORE,
       page: () => const StoreView(),
       binding: StoreBinding(),
+    ),
+    GetPage(
+      name: _Paths.SEARCH_VIEW,
+      page: () => const SearchViewView(),
+      binding: SearchViewBinding(),
     ),
   ];
 }

@@ -31,8 +31,6 @@ class MyStoreController extends GetxController {
 
         final response = await _userServices.getUserStore(userId.value);
 
-        print(response);
-
         if (response['status'] == true && response['have_store'] == true) {
           haveStore.value = true;
           prefs.setBool('is_have_store', haveStore.value);

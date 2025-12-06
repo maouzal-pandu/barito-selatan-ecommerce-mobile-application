@@ -21,6 +21,7 @@ abstract class Routes {
   static const MY_STORE_PROFILE = _Paths.MY_STORE_PROFILE;
   static const PRODUCT_DETAILS = _Paths.PRODUCT_DETAILS;
   static const STORE = _Paths.STORE;
+  static const SEARCH_VIEW = _Paths.SEARCH_VIEW;
 }
 
 abstract class _Paths {
@@ -41,4 +42,5 @@ abstract class _Paths {
   static const MY_STORE_PROFILE = '/my-store-profile';
   static const PRODUCT_DETAILS = '/product-details';
   static const STORE = '/store';
+  static const SEARCH_VIEW = '/search-view';
 }

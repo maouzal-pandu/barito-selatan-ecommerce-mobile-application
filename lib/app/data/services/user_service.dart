@@ -82,4 +82,31 @@ class UserService {
       throw Exception('Error from user service class | Error : $e');
     }
   }
+
+  Future<Map<String, dynamic>> fetchUserWishlistItems(
+    String consumerId, {
+    int? page,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$url/fetchUserWishlist?page=$page'),
+        body: {'consumer_id': consumerId},
+      );
+
+      final decodedJson = jsonDecode(response.body);
+
+      if (decodedJson['status'] == true) {
+        return {
+          'status': true,
+          'message': decodedJson['message'],
+          'total_pages': decodedJson['total_pages'],
+          'data': decodedJson['data'],
+        };
+      } else {
+        return {'status': false, 'message': decodedJson['message']};
+      }
+    } catch (e) {
+      throw Exception('$e');
+    }
+  }
 }

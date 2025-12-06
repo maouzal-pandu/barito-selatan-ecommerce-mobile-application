@@ -19,7 +19,7 @@ class HomeView extends GetView<HomeController> {
         shadowColor: Colors.transparent,
         actions: [
           IconButton(
-            onPressed: () => Get.toNamed('/search'),
+            onPressed: () => Get.toNamed('/search-view'),
             icon: const Icon(Icons.search_rounded),
           ),
         ],
@@ -133,12 +133,11 @@ class HomeView extends GetView<HomeController> {
             ),
 
             // cart button
-            ListTile(
-              leading: const Icon(Icons.shopping_basket_rounded),
-              title: const Text('Keranjang'),
-              onTap: () => Get.toNamed('/cart'),
-            ),
-
+            // ListTile(
+            //   leading: const Icon(Icons.shopping_basket_rounded),
+            //   title: const Text('Keranjang'),
+            //   onTap: () => Get.toNamed('/cart'),
+            // ),
             const SizedBox(
               child: Padding(
                 padding: EdgeInsets.all(8.0),

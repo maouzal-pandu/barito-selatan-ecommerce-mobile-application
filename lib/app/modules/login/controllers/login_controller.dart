@@ -27,8 +27,6 @@ class LoginController extends GetxController {
           passController.text,
         );
 
-        print(response);
-
         if (response['status'] == true) {
           final Map<String, dynamic> user = response['data'];
           final prefs = await SharedPreferences.getInstance();

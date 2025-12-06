@@ -2,27 +2,30 @@ import 'package:barsel_ecommerce_flutter_application_alter/app/data/services/ite
 import 'package:barsel_ecommerce_flutter_application_alter/app/data/services/store_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductDetailsController extends GetxController {
-  // Product variables
   final productId = ''.obs;
 
-  // Store variables
   final resellerId = ''.obs;
 
   final productImages = [].obs;
+  final storeProfilePicture = ''.obs;
   final data = <String, dynamic>{}.obs;
   final storeData = <String, dynamic>{};
   final reviews = <Map<String, dynamic>>[].obs;
   final relatedProducts = <Map<String, dynamic>>[].obs;
+  final isInWishlist = false.obs;
 
   final isLoadingProduct = false.obs;
+  final isLoadingMoreProducts = false.obs;
   final isLoadingReviews = false.obs;
   final isLoadingStore = false.obs;
   final isLoadingRelatedProducts = false.obs;
-  final isLoadingMoreRelatedProducts = false.obs;
 
-  // Image variable
+  final totalProductPage = 0.obs;
+  final currentProductPage = 0.obs;
+
   final imageController = PageController();
   final currentImageIndex = 0.obs;
 
@@ -40,6 +43,15 @@ class ProductDetailsController extends GetxController {
     resellerId.value = args['id_reseller'];
 
     _initializeData();
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+              scrollController.position.maxScrollExtent - 25 &&
+          !isLoadingMoreProducts.value &&
+          currentProductPage.value < totalProductPage.value) {
+        loadMoreRelatedProducts();
+      }
+    });
   }
 
   Future<void> _initializeData() async {
@@ -47,6 +59,7 @@ class ProductDetailsController extends GetxController {
     loadRelatedProducts();
     loadReviews();
     loadStore();
+    checkWishlist();
   }
 
   Future<void> loadProduct() async {
@@ -134,20 +147,135 @@ class ProductDetailsController extends GetxController {
     try {
       isLoadingRelatedProducts.value = true;
 
+      currentProductPage.value = 1;
+
       final response = await _itemsService.categoryProducts(
         data['nama_kategori'],
+        page: currentProductPage.value,
       );
 
-      print(response);
-
       if (response['status'] == false) {}
+
+      totalProductPage.value = response['total_pages'];
 
       final relatedProductsResponse = response['data'];
       relatedProducts.assignAll(relatedProductsResponse);
     } catch (e) {
-      print(e);
+      Get.snackbar('Error', '$e', backgroundColor: Colors.red);
     } finally {
       isLoadingRelatedProducts.value = false;
+    }
+  }
+
+  Future<void> loadMoreRelatedProducts() async {
+    try {
+      isLoadingMoreProducts.value = true;
+      currentProductPage.value++;
+
+      final response = await _itemsService.categoryProducts(
+        data['nama_kategori'],
+        page: currentProductPage.value,
+      );
+
+      if (response['status'] == false) {}
+
+      final relatedProductsResponse = response['data'];
+      relatedProducts.addAll(relatedProductsResponse);
+    } catch (e) {
+      Get.snackbar('Error', '$e', backgroundColor: Colors.red);
+    } finally {
+      isLoadingMoreProducts.value = false;
+    }
+  }
+
+  Future<void> addRemoveProductWishlist() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final isLogin = prefs.getBool('login') ?? false;
+
+      if (isLogin) {
+        final consumerId = prefs.getString('id_user');
+
+        final response = await _itemsService.addRemoveProductWishlist(
+          productId.value,
+          consumerId!,
+        );
+
+        if (response['status']) {
+          isInWishlist.value = !isInWishlist.value;
+          Get.snackbar(
+            'Berhasil',
+            response['message'],
+            backgroundColor: Colors.white,
+          );
+        } else {
+          Get.snackbar(
+            'Gagal',
+            response['message'],
+            backgroundColor: Colors.red,
+          );
+        }
+      } else {
+        // Dialog login
+        Get.defaultDialog(
+          title: 'Gagal',
+          titleStyle: TextStyle(fontSize: 20),
+
+          content: Column(
+            children: [
+              SizedBox(width: double.infinity, child: const Divider()),
+
+              const SizedBox(height: 30),
+
+              const Text(
+                'Silahkan login terlebih dahulu untuk menggunakan fitur ini.',
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 30),
+            ],
+          ),
+
+          // Login button
+          actions: [
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(Colors.amber),
+                ),
+                onPressed: () => Get.toNamed('/login'),
+                child: const Text('Login'),
+              ),
+            ),
+          ],
+        );
+      }
+    } catch (e) {
+      Get.snackbar('Error', '$e');
+    }
+  }
+
+  Future<void> checkWishlist() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final isLogin = prefs.getBool('login') ?? false;
+
+      if (isLogin) {
+        final consumerId = prefs.getString('id_user')!;
+        final response = await _itemsService.productWishlistCheck(
+          productId.value,
+          consumerId,
+        );
+
+        if (response['status'] == true) {
+          isInWishlist.value = true;
+        } else {
+          isInWishlist.value = false;
+        }
+      }
+    } catch (e) {
+      Get.snackbar('Error', '$e', backgroundColor: Colors.red);
     }
   }
 }
