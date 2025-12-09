@@ -9,10 +9,15 @@ class MyStoreController extends GetxController {
   final userId = ''.obs;
   final storeName = ''.obs;
   final storeProfilePicture = ''.obs;
+
+  // first time load boolean
   final isLoading = false.obs;
+
+  // load more store prodects
+  final isLoadingMoreProducts = false.obs;
+
   final _userServices = UserService();
   final products = <Map<String, dynamic>>[].obs;
-  final isLoadingMoreProducts = false.obs;
 
   @override
   void onInit() {
@@ -66,6 +71,16 @@ class MyStoreController extends GetxController {
       } finally {
         isLoading.value = false;
       }
+    }
+  }
+
+  Future<void> storeProducts() async {
+    try {
+      isLoadingMoreProducts.value = true;
+    } catch (e) {
+      Get.snackbar('Error', '$e', backgroundColor: Colors.redAccent);
+    } finally {
+      isLoadingMoreProducts.value = false;
     }
   }
 }

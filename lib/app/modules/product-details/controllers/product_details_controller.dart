@@ -54,6 +54,12 @@ class ProductDetailsController extends GetxController {
     });
   }
 
+  @override
+  void onClose() {
+    print("Controller disposed");
+    super.onClose();
+  }
+
   Future<void> _initializeData() async {
     await loadProduct();
     loadRelatedProducts();
@@ -128,6 +134,8 @@ class ProductDetailsController extends GetxController {
 
       if (response['status'] == true) {
         storeData.assignAll(response['data']);
+        storeProfilePicture.value = storeData['foto'] ?? '';
+        // print(response);
       }
     } catch (e) {
       Get.showSnackbar(

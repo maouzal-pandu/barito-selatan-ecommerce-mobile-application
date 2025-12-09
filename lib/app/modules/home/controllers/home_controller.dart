@@ -7,6 +7,8 @@ class HomeController extends GetxController {
   final isLogin = false.obs;
   final username = ''.obs;
   final profilePicture = ''.obs;
+
+  final consumerId = ''.obs;
   final idReseller = ''.obs;
 
   final _itemService = ItemsService();
@@ -94,7 +96,9 @@ class HomeController extends GetxController {
     if (isLogin.value == true) {
       username.value = prefs.getString('username') ?? 'null';
       profilePicture.value = prefs.getString('profile_picture') ?? '';
+
       idReseller.value = prefs.getString('id_reseller')!;
+      consumerId.value = prefs.getString('id_user')!;
     }
   }
 

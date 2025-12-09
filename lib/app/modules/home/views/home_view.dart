@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
@@ -14,13 +13,49 @@ class HomeView extends GetView<HomeController> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.amber,
-        title: const Text('Beranda'),
+
+        // searchbar
+        title: InkWell(
+          onTap: () => Get.toNamed('/search-page'),
+          child: SizedBox(
+            width: double.infinity,
+            height: 40,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(32)),
+                color: Colors.white,
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.search_rounded,
+                      color: Colors.grey,
+                      size: 18,
+                    ),
+
+                    const Text(
+                      'Cari barang...',
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.transparent,
+
+        // cart
         actions: [
           IconButton(
-            onPressed: () => Get.toNamed('/search-view'),
-            icon: const Icon(Icons.search_rounded),
+            onPressed: () =>
+                Get.toNamed('/cart', arguments: controller.consumerId.value),
+            icon: const Icon(Icons.shopping_bag_rounded),
           ),
         ],
       ),
@@ -133,11 +168,12 @@ class HomeView extends GetView<HomeController> {
             ),
 
             // cart button
-            // ListTile(
-            //   leading: const Icon(Icons.shopping_basket_rounded),
-            //   title: const Text('Keranjang'),
-            //   onTap: () => Get.toNamed('/cart'),
-            // ),
+            ListTile(
+              leading: const Icon(Icons.shopping_bag_rounded),
+              title: const Text('Keranjang'),
+              onTap: () => Get.toNamed('/cart'),
+            ),
+
             const SizedBox(
               child: Padding(
                 padding: EdgeInsets.all(8.0),
@@ -153,6 +189,37 @@ class HomeView extends GetView<HomeController> {
                 '/my-store',
                 arguments: controller.idReseller.value,
               ),
+            ),
+
+            const SizedBox(
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Divider(color: Colors.grey, indent: 15, endIndent: 15),
+              ),
+            ),
+
+            // Belum bayar
+            ListTile(
+              leading: const Icon(Icons.wallet_rounded),
+              title: const Text('Belum Bayar'),
+              onTap: () =>
+                  Get.toNamed('/', arguments: controller.consumerId.value),
+            ),
+
+            // Dikirim
+            ListTile(
+              leading: const Icon(Icons.delivery_dining_rounded),
+              title: const Text('Dikirim'),
+              onTap: () =>
+                  Get.toNamed('/', arguments: controller.consumerId.value),
+            ),
+
+            // Beri penilaian
+            ListTile(
+              leading: const Icon(Icons.stars_rounded),
+              title: const Text('Beri Penilaian'),
+              onTap: () =>
+                  Get.toNamed('/', arguments: controller.idReseller.value),
             ),
 
             const SizedBox(
@@ -255,6 +322,7 @@ class HomeView extends GetView<HomeController> {
                               'id_product': item['id_produk'],
                               'id_reseller': item['id_reseller'],
                             },
+                            parameters: {'tag': item['id_produk']},
                           ),
                           child: Card(
                             shape: RoundedRectangleBorder(
@@ -286,65 +354,63 @@ class HomeView extends GetView<HomeController> {
                                     ),
                                   ),
                                 ),
-                                Container(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 8.0,
-                                      right: 8,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      // mainAxisAlignment:
-                                      // MainAxisAlignment.spaceAround,
-                                      children: [
-                                        const SizedBox(height: 2.5),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 8.0,
+                                    right: 8,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    // mainAxisAlignment:
+                                    // MainAxisAlignment.spaceAround,
+                                    children: [
+                                      const SizedBox(height: 2.5),
 
-                                        Text(
-                                          item['nama_produk'] ?? '-',
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(fontSize: 12),
+                                      Text(
+                                        item['nama_produk'] ?? '-',
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+
+                                      const SizedBox(height: 5),
+
+                                      Text(
+                                        NumberFormat.currency(
+                                          locale: 'id_ID',
+                                          symbol: 'Rp',
+                                        ).format(
+                                          int.tryParse(
+                                                item['harga_konsumen'],
+                                              ) ??
+                                              0,
                                         ),
-
-                                        const SizedBox(height: 5),
-
-                                        Text(
-                                          NumberFormat.currency(
-                                            locale: 'id_ID',
-                                            symbol: 'Rp',
-                                          ).format(
-                                            int.tryParse(
-                                                  item['harga_konsumen'],
-                                                ) ??
-                                                0,
-                                          ),
-                                          style: TextStyle(
-                                            color: Colors.amber[900],
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                        style: TextStyle(
+                                          color: Colors.amber[900],
+                                          fontWeight: FontWeight.w600,
                                         ),
+                                      ),
 
-                                        const SizedBox(height: 5),
+                                      const SizedBox(height: 5),
 
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.pin_drop_rounded,
-                                              size: 12,
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.pin_drop_rounded,
+                                            size: 12,
+                                            color: Colors.grey[700],
+                                          ),
+                                          Text(
+                                            item['subdistrict_name'] ?? '',
+                                            style: TextStyle(
+                                              fontSize: 12,
                                               color: Colors.grey[700],
                                             ),
-                                            Text(
-                                              item['subdistrict_name'] ?? '',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey[700],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],

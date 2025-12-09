@@ -110,65 +110,63 @@ class WishlistView extends GetView<WishlistController> {
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        left: 8.0,
-                                        right: 8,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        // mainAxisAlignment:
-                                        // MainAxisAlignment.spaceAround,
-                                        children: [
-                                          const SizedBox(height: 2.5),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 8.0,
+                                      right: 8,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      // mainAxisAlignment:
+                                      // MainAxisAlignment.spaceAround,
+                                      children: [
+                                        const SizedBox(height: 2.5),
 
-                                          Text(
-                                            item['nama_produk'] ?? '-',
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(fontSize: 12),
+                                        Text(
+                                          item['nama_produk'] ?? '-',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(fontSize: 12),
+                                        ),
+
+                                        const SizedBox(height: 5),
+
+                                        Text(
+                                          NumberFormat.currency(
+                                            locale: 'id_ID',
+                                            symbol: 'Rp',
+                                          ).format(
+                                            int.tryParse(
+                                                  item['harga_konsumen'],
+                                                ) ??
+                                                0,
                                           ),
-
-                                          const SizedBox(height: 5),
-
-                                          Text(
-                                            NumberFormat.currency(
-                                              locale: 'id_ID',
-                                              symbol: 'Rp',
-                                            ).format(
-                                              int.tryParse(
-                                                    item['harga_konsumen'],
-                                                  ) ??
-                                                  0,
-                                            ),
-                                            style: TextStyle(
-                                              color: Colors.amber[900],
-                                              fontWeight: FontWeight.w600,
-                                            ),
+                                          style: TextStyle(
+                                            color: Colors.amber[900],
+                                            fontWeight: FontWeight.w600,
                                           ),
+                                        ),
 
-                                          const SizedBox(height: 5),
+                                        const SizedBox(height: 5),
 
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.pin_drop_rounded,
-                                                size: 12,
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.pin_drop_rounded,
+                                              size: 12,
+                                              color: Colors.grey[700],
+                                            ),
+                                            Text(
+                                              item['subdistrict_name'] ?? '',
+                                              style: TextStyle(
+                                                fontSize: 12,
                                                 color: Colors.grey[700],
                                               ),
-                                              Text(
-                                                item['subdistrict_name'] ?? '',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.grey[700],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],

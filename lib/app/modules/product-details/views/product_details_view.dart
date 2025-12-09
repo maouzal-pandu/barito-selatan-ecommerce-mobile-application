@@ -7,6 +7,8 @@ import 'package:intl/intl.dart';
 import '../controllers/product_details_controller.dart';
 
 class ProductDetailsView extends GetView<ProductDetailsController> {
+  String? get tag => Get.parameters['tag'];
+
   const ProductDetailsView({super.key});
   @override
   Widget build(BuildContext context) {
@@ -16,10 +18,14 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
       body: Obx(
         () =>
             controller.isLoadingProduct.value || controller.isLoadingStore.value
-            ? const Center(
+            ?
+              // loading screen
+              const Center(
                 child: CircularProgressIndicator(color: Colors.amber),
               )
-            : SingleChildScrollView(
+            :
+              // product detail view
+              SingleChildScrollView(
                 controller: controller.scrollController,
                 child: Column(
                   children: [
@@ -429,7 +435,7 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   CircleAvatar(
-                                    radius: 20, // ukuran avatar
+                                    radius: 20,
                                     backgroundColor: Colors.grey[200],
                                     child:
                                         controller
@@ -522,6 +528,40 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                       ),
                     ),
 
+                    const SizedBox(height: 20),
+
+                    // divider for related products
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: const SizedBox(
+                            width: double.infinity,
+                            child: Divider(
+                              indent: 20,
+                              endIndent: 10,
+                              thickness: 2,
+                            ),
+                          ),
+                        ),
+
+                        const Text('Produk Terkait'),
+
+                        Expanded(
+                          child: const SizedBox(
+                            width: double.infinity,
+                            child: Divider(
+                              indent: 10,
+                              endIndent: 20,
+                              thickness: 2,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
                     // Related products
                     Container(
                       decoration: BoxDecoration(
@@ -539,160 +579,145 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Produk terkait',
-                              style: TextStyle(fontSize: 20),
-                            ),
+                        child: GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 0.65,
+                                mainAxisSpacing: 2.5,
+                                crossAxisSpacing: 2.5,
+                              ),
+                          shrinkWrap: true,
+                          itemCount: controller.relatedProducts.length,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (content, index) {
+                            if (controller.relatedProducts.isEmpty) {
+                              return null;
+                            } else if (controller
+                                .isLoadingRelatedProducts
+                                .value) {
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.amber,
+                                ),
+                              );
+                            }
 
-                            GridView.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    childAspectRatio: 0.65,
-                                    mainAxisSpacing: 2.5,
-                                    crossAxisSpacing: 2.5,
-                                  ),
-                              shrinkWrap: true,
-                              itemCount: controller.relatedProducts.length,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemBuilder: (content, index) {
-                                if (controller.relatedProducts.isEmpty) {
-                                  return null;
-                                } else if (controller
-                                    .isLoadingRelatedProducts
-                                    .value) {
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      color: Colors.amber,
-                                    ),
-                                  );
-                                }
+                            final item = controller.relatedProducts[index];
+                            final gambarString =
+                                item['gambar'] as String? ?? '';
+                            final gambarList = gambarString.split(';');
+                            final gambarUtama = gambarList.isNotEmpty
+                                ? gambarList.first
+                                : '';
 
-                                final item = controller.relatedProducts[index];
-                                final gambarString =
-                                    item['gambar'] as String? ?? '';
-                                final gambarList = gambarString.split(';');
-                                final gambarUtama = gambarList.isNotEmpty
-                                    ? gambarList.first
-                                    : '';
-
-                                return InkWell(
-                                  onTap: () => Get.toNamed(
-                                    '/item-details',
-                                    arguments: {
-                                      'id_product': item['id_produk'],
-                                      'name_product': item['nama_produk'],
-                                      'price_product': double.tryParse(
-                                        item['harga_konsumen'],
+                            return InkWell(
+                              onTap: () {
+                                Get.toNamed(
+                                  '/product-details',
+                                  arguments: {
+                                    'id_product': item['id_produk'],
+                                    'id_reseller': item['id_reseller'],
+                                  },
+                                  parameters: {'tag': item['id_produk']},
+                                  preventDuplicates: false,
+                                );
+                              },
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                color: const Color(0xFFFFFFFF),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    AspectRatio(
+                                      aspectRatio: 1,
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            const BorderRadius.vertical(
+                                              top: Radius.circular(12),
+                                            ),
+                                        child: Image.network(
+                                          gambarUtama,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                return Container(
+                                                  color: Colors.grey[300],
+                                                  child: const Icon(
+                                                    Icons.broken_image,
+                                                    size: 50,
+                                                  ),
+                                                );
+                                              },
+                                        ),
                                       ),
-                                      'id_reseller': item['id_reseller'],
-                                      'subdistrict_reseller':
-                                          item['subdistrict_name'],
-                                    },
-                                    preventDuplicates: false,
-                                  ),
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    color: const Color(0xFFFFFFFF),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        AspectRatio(
-                                          aspectRatio: 1,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                const BorderRadius.vertical(
-                                                  top: Radius.circular(12),
-                                                ),
-                                            child: Image.network(
-                                              gambarUtama,
-                                              fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (context, error, stackTrace) {
-                                                    return Container(
-                                                      color: Colors.grey[300],
-                                                      child: const Icon(
-                                                        Icons.broken_image,
-                                                        size: 50,
-                                                      ),
-                                                    );
-                                                  },
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 8.0,
+                                        right: 8,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        // mainAxisAlignment:
+                                        // MainAxisAlignment.spaceAround,
+                                        children: [
+                                          const SizedBox(height: 2.5),
+
+                                          Text(
+                                            item['nama_produk'] ?? '-',
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(fontSize: 12),
+                                          ),
+
+                                          const SizedBox(height: 5),
+
+                                          Text(
+                                            NumberFormat.currency(
+                                              locale: 'id_ID',
+                                              symbol: 'Rp',
+                                            ).format(
+                                              int.tryParse(
+                                                    item['harga_konsumen'],
+                                                  ) ??
+                                                  0,
+                                            ),
+                                            style: TextStyle(
+                                              color: Colors.amber[900],
+                                              fontWeight: FontWeight.w600,
                                             ),
                                           ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            left: 8.0,
-                                            right: 8,
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            // mainAxisAlignment:
-                                            // MainAxisAlignment.spaceAround,
+
+                                          const SizedBox(height: 5),
+
+                                          Row(
                                             children: [
-                                              const SizedBox(height: 2.5),
-
-                                              Text(
-                                                item['nama_produk'] ?? '-',
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(fontSize: 12),
+                                              Icon(
+                                                Icons.pin_drop_rounded,
+                                                size: 12,
+                                                color: Colors.grey[700],
                                               ),
-
-                                              const SizedBox(height: 5),
-
                                               Text(
-                                                NumberFormat.currency(
-                                                  locale: 'id_ID',
-                                                  symbol: 'Rp',
-                                                ).format(
-                                                  int.tryParse(
-                                                        item['harga_konsumen'],
-                                                      ) ??
-                                                      0,
-                                                ),
+                                                item['subdistrict_name'] ?? '',
                                                 style: TextStyle(
-                                                  color: Colors.amber[900],
-                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12,
+                                                  color: Colors.grey[700],
                                                 ),
-                                              ),
-
-                                              const SizedBox(height: 5),
-
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.pin_drop_rounded,
-                                                    size: 12,
-                                                    color: Colors.grey[700],
-                                                  ),
-                                                  Text(
-                                                    item['subdistrict_name'] ??
-                                                        '',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey[700],
-                                                    ),
-                                                  ),
-                                                ],
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),

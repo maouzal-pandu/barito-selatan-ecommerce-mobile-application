@@ -22,12 +22,16 @@ import '../modules/product-details/bindings/product_details_binding.dart';
 import '../modules/product-details/views/product_details_view.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
-import '../modules/search_view/bindings/search_view_binding.dart';
-import '../modules/search_view/views/search_view_view.dart';
+import '../modules/search_page/bindings/search_page_binding.dart';
+import '../modules/search_page/views/search_page_view.dart';
+import '../modules/search_result/bindings/search_result_binding.dart';
+import '../modules/search_result/views/search_result_view.dart';
 import '../modules/settings/bindings/settings_binding.dart';
 import '../modules/settings/views/settings_view.dart';
 import '../modules/store/bindings/store_binding.dart';
 import '../modules/store/views/store_view.dart';
+import '../modules/store_products_category_result/bindings/store_products_category_result_binding.dart';
+import '../modules/store_products_category_result/views/store_products_category_result_view.dart';
 import '../modules/user-account/bindings/user_account_binding.dart';
 import '../modules/user-account/views/user_account_view.dart';
 import '../modules/verify-otp/bindings/verify_otp_binding.dart';
@@ -126,9 +130,19 @@ class AppPages {
       binding: StoreBinding(),
     ),
     GetPage(
-      name: _Paths.SEARCH_VIEW,
-      page: () => const SearchViewView(),
-      binding: SearchViewBinding(),
+      name: _Paths.SEARCH_PAGE,
+      page: () => const SearchPageView(),
+      binding: SearchPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.SEARCH_RESULT,
+      page: () => const SearchResultView(),
+      binding: SearchResultBinding(),
+    ),
+    GetPage(
+      name: _Paths.STORE_PRODUCTS_CATEGORY_RESULT,
+      page: () => const StoreProductsCategoryResultView(),
+      binding: StoreProductsCategoryResultBinding(),
     ),
   ];
 }

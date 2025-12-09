@@ -11,7 +11,7 @@ class EditProfileController extends GetxController {
   final birthPlaceController = TextEditingController();
   final birthDateController = TextEditingController();
   // final selectedSubdistrict = ''.obs;
-  final subdistrictId = ''.obs;
+  final subdistrictId = '641'.obs;
   final cityId = '44'.obs;
   final provinceId = '14'.obs;
   final profilePicture = ''.obs;

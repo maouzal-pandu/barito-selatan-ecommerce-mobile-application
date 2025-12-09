@@ -21,7 +21,10 @@ abstract class Routes {
   static const MY_STORE_PROFILE = _Paths.MY_STORE_PROFILE;
   static const PRODUCT_DETAILS = _Paths.PRODUCT_DETAILS;
   static const STORE = _Paths.STORE;
-  static const SEARCH_VIEW = _Paths.SEARCH_VIEW;
+  static const SEARCH_PAGE = _Paths.SEARCH_PAGE;
+  static const SEARCH_RESULT = _Paths.SEARCH_RESULT;
+  static const STORE_PRODUCTS_CATEGORY_RESULT =
+      _Paths.STORE_PRODUCTS_CATEGORY_RESULT;
 }
 
 abstract class _Paths {
@@ -42,5 +45,8 @@ abstract class _Paths {
   static const MY_STORE_PROFILE = '/my-store-profile';
   static const PRODUCT_DETAILS = '/product-details';
   static const STORE = '/store';
-  static const SEARCH_VIEW = '/search-view';
+  static const SEARCH_PAGE = '/search-page';
+  static const SEARCH_RESULT = '/search-result';
+  static const STORE_PRODUCTS_CATEGORY_RESULT =
+      '/store-products-category-result';
 }
