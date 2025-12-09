@@ -7,7 +7,7 @@ class UserService {
   // final url = 'http://202.157.177.43/umkm_barsel_main/user';
 
   // local address
-  final url = 'http://192.168.1.2/umkm_barsel/user';
+  final url = 'http://192.168.1.81/umkm_barsel/user';
 
   Future<Map<String, dynamic>> updateProfileUser(
     String id,

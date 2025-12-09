@@ -10,11 +10,17 @@ class ProductDetailsController extends GetxController {
   final resellerId = ''.obs;
 
   final productImages = [].obs;
-  final storeProfilePicture = ''.obs;
   final data = <String, dynamic>{}.obs;
+
+  final storeProfilePicture = ''.obs;
   final storeData = <String, dynamic>{};
+
   final reviews = <Map<String, dynamic>>[].obs;
+
   final relatedProducts = <Map<String, dynamic>>[].obs;
+  final productVariations = <String, List<Map<String, dynamic>>>{}.obs;
+  final selectedVariation = <String, Map<String, dynamic>>{}.obs;
+
   final isInWishlist = false.obs;
 
   final isLoadingProduct = false.obs;
@@ -54,12 +60,6 @@ class ProductDetailsController extends GetxController {
     });
   }
 
-  @override
-  void onClose() {
-    print("Controller disposed");
-    super.onClose();
-  }
-
   Future<void> _initializeData() async {
     await loadProduct();
     loadRelatedProducts();
@@ -87,6 +87,16 @@ class ProductDetailsController extends GetxController {
 
       data.assignAll(response['data']);
       productImages.assignAll(response['data']['gambar']);
+      // productVariations.assignAll(data['variasi']);
+
+      // Load variations
+      if (response['data']["variasi"] != null) {
+        productVariations.value =
+            (response['data']["variasi"] as Map<String, dynamic>).map(
+              (key, value) =>
+                  MapEntry(key, List<Map<String, dynamic>>.from(value)),
+            );
+      }
     } catch (e) {
       Get.showSnackbar(
         GetSnackBar(
@@ -168,6 +178,7 @@ class ProductDetailsController extends GetxController {
 
       final relatedProductsResponse = response['data'];
       relatedProducts.assignAll(relatedProductsResponse);
+      // print(relatedProducts);
     } catch (e) {
       Get.snackbar('Error', '$e', backgroundColor: Colors.red);
     } finally {
@@ -285,5 +296,10 @@ class ProductDetailsController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', '$e', backgroundColor: Colors.red);
     }
+  }
+
+  void selectVariation(String namaVariasi, Map<String, dynamic> opsi) {
+    selectedVariation[namaVariasi] = opsi;
+    selectedVariation.refresh();
   }
 }

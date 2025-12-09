@@ -8,7 +8,7 @@ class ItemsService {
   // final url = "http://202.157.177.43/umkm_barsel_main/product";
 
   // local address
-  final url = 'http://192.168.1.2/umkm_barsel/product';
+  final url = 'http://192.168.1.81/umkm_barsel/product';
 
   Future<List<Map<String, dynamic>>> category() async {
     try {
@@ -95,6 +95,7 @@ class ItemsService {
       );
 
       final data = jsonDecode(response.body);
+
       if (data['status'] == true) {
         return {'status': true, 'data': data['data']};
       }

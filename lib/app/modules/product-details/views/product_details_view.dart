@@ -161,6 +161,81 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                             Text(controller.data['nama_produk']),
 
                             const SizedBox(height: 15),
+
+                            // Product variations (read only)
+                            Obx(() {
+                              if (controller.productVariations.isEmpty) {
+                                return const SizedBox.shrink();
+                              }
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Variasi:",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+
+                                  // Loop keys (warna, ukuran, dll)
+                                  ...controller.productVariations.entries.map((
+                                    entry,
+                                  ) {
+                                    final kategori =
+                                        entry.key; // contoh: "Warna"
+                                    final opsi = entry
+                                        .value; // list variasi, contoh: [{nama: Merah}, {nama: Biru}]
+
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 8.0,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            kategori,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.grey[800],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+
+                                          Wrap(
+                                            spacing: 8,
+                                            children: opsi.map((item) {
+                                              return Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 6,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey[200],
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Text(
+                                                  item["value"] ?? "-",
+                                                ),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              );
+                            }),
+
+                            const SizedBox(height: 15),
                           ],
                         ),
                       ),
@@ -737,7 +812,51 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                   backgroundColor: WidgetStatePropertyAll(Colors.blue),
                   shape: WidgetStatePropertyAll(LinearBorder()),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                    ),
+                    builder: (context) {
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(height: 20),
+
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.amber,
+                                  ),
+                                  onPressed: () {
+                                    // controller.addToCart();
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    "Tambahkan ke Keranjang",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+
                 child: const Text(
                   "Tambahkan ke Keranjang",
                   style: TextStyle(color: Colors.white),
