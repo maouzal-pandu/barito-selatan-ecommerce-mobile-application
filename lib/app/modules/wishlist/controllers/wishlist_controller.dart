@@ -9,6 +9,8 @@ class WishlistController extends GetxController {
   final products = <Map<String, dynamic>>[].obs;
 
   final isLoadingMoreProducts = false.obs;
+  final isLoading = false.obs;
+
   final currentProductPage = 0.obs;
   final totalProductPage = 0.obs;
 
@@ -45,6 +47,8 @@ class WishlistController extends GetxController {
   Future<void> loadProduct() async {
     if (isLogin.value) {
       try {
+        isLoading.value = true;
+
         final prefs = await SharedPreferences.getInstance();
         final consumerId = prefs.getString('id_user')!;
 
@@ -59,7 +63,13 @@ class WishlistController extends GetxController {
           Get.snackbar('Gagal mengambil wishlist', response['message']);
         }
       } catch (e) {
-        Get.snackbar('Gagal Mengambil Wishlist', '$e');
+        Get.snackbar(
+          'Gagal Mengambil Wishlist',
+          '$e',
+          backgroundColor: Colors.red,
+        );
+      } finally {
+        isLoading.value = false;
       }
     }
   }

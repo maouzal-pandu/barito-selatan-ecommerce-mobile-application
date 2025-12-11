@@ -143,16 +143,18 @@ class StoreController extends GetxController {
   }
 
   void openWhatsapp() async {
-    final url = Uri.parse(
-      'https://api.whatsapp.com/send?phone=${storePhoneNumber.value}',
-    );
+    final url = Uri.parse('https://wa.me/${storePhoneNumber.value}');
 
     // final url = Uri.parse('https://api.whatsapp.com/send?phone=6287788671514');
 
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
-      Get.snackbar('Gagal', 'Tidak dapat membuka Whatsapp');
+      Get.snackbar(
+        'Gagal',
+        'Tidak dapat membuka Whatsapp',
+        backgroundColor: Colors.red,
+      );
     }
   }
 }

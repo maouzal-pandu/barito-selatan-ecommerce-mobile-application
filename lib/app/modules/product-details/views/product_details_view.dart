@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../controllers/product_details_controller.dart';
 
 class ProductDetailsView extends GetView<ProductDetailsController> {
+  @override
   String? get tag => Get.parameters['tag'];
 
   const ProductDetailsView({super.key});
@@ -803,13 +804,174 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
 
       bottomNavigationBar: Row(
         children: [
-          // Tambahkan ke keranjang button
+          Container(
+            height: 50,
+            width: 170,
+            decoration: BoxDecoration(color: Colors.green[800]),
+            child: Row(
+              children: [
+                // Chat reseller about the product in whatsapp
+                Expanded(
+                  child: SizedBox(
+                    child: SizedBox(
+                      height: 50,
+                      child: IconButton(
+                        onPressed: () => controller.openWhatsApp(),
+                        icon: const Icon(
+                          Icons.chat_outlined,
+                          color: Color(0xFFFFFFFF),
+                        ),
+                        style: ButtonStyle(
+                          shape: WidgetStatePropertyAll(LinearBorder()),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 35, child: VerticalDivider()),
+
+                // Tambahkan ke keranjang button
+                Expanded(
+                  child: SizedBox(
+                    height: 50,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.shopping_cart_outlined,
+                        color: Color(0xFFFFFFFF),
+                      ),
+                      style: ButtonStyle(
+                        shape: WidgetStatePropertyAll(LinearBorder()),
+                      ),
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
+                            ),
+                          ),
+                          builder: (context) {
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                bottom: MediaQuery.of(
+                                  context,
+                                ).viewInsets.bottom,
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const SizedBox(height: 20),
+
+                                    ...controller.productVariations.entries.map((
+                                      e,
+                                    ) {
+                                      final variation = e.key;
+                                      final variationValue = e.value;
+
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 8.0,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              variation,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.grey[800],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 6),
+
+                                            Wrap(
+                                              spacing: 8,
+                                              children: variationValue.map((
+                                                item,
+                                              ) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 10,
+                                                        vertical: 6,
+                                                      ),
+                                                  child: TextButton(
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          WidgetStatePropertyAll(
+                                                            Colors.grey[200],
+                                                          ),
+                                                      shape: WidgetStatePropertyAll(
+                                                        RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadiusGeometry.circular(
+                                                                12,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    onPressed: () {},
+                                                    child: Text(
+                                                      item["value"] ?? "-",
+                                                    ),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+
+                                    const SizedBox(height: 20),
+
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.amber,
+                                        ),
+                                        onPressed: () {
+                                          // controller.addToCart();
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text(
+                                          "Tambahkan ke Keranjang",
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Beli sekarang button
           Expanded(
             child: SizedBox(
               height: 50,
               child: TextButton(
                 style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(Colors.blue),
+                  backgroundColor: WidgetStatePropertyAll(Colors.amber[700]),
                   shape: WidgetStatePropertyAll(LinearBorder()),
                 ),
                 onPressed: () {
@@ -829,8 +991,67 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              const SizedBox(height: 20),
+
+                              ...controller.productVariations.entries.map((e) {
+                                final variation = e.key;
+                                final variationValue = e.value;
+
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        variation,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.grey[800],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+
+                                      Wrap(
+                                        spacing: 8,
+                                        children: variationValue.map((item) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 6,
+                                            ),
+                                            child: TextButton(
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    WidgetStatePropertyAll(
+                                                      Colors.grey[200],
+                                                    ),
+                                                shape: WidgetStatePropertyAll(
+                                                  RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadiusGeometry.circular(
+                                                          12,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ),
+                                              onPressed: () {},
+                                              child: Text(item["value"] ?? "-"),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+
                               const SizedBox(height: 20),
 
                               SizedBox(
@@ -844,7 +1065,7 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                                     Navigator.pop(context);
                                   },
                                   child: Text(
-                                    "Tambahkan ke Keranjang",
+                                    "Beli sekarang",
                                     style: TextStyle(color: Colors.black),
                                   ),
                                 ),
@@ -856,28 +1077,9 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                     },
                   );
                 },
-
-                child: const Text(
-                  "Tambahkan ke Keranjang",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-
-          // Beli sekarang button
-          Expanded(
-            child: SizedBox(
-              height: 50,
-              child: TextButton(
-                style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(Colors.amber),
-                  shape: WidgetStatePropertyAll(LinearBorder()),
-                ),
-                onPressed: () {},
                 child: const Text(
                   "Beli Sekarang",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: Color(0xFFFFFFFF)),
                 ),
               ),
             ),

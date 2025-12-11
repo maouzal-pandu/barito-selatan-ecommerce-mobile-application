@@ -3,6 +3,7 @@ import 'package:barsel_ecommerce_flutter_application_alter/app/data/services/sto
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProductDetailsController extends GetxController {
   final productId = ''.obs;
@@ -301,5 +302,23 @@ class ProductDetailsController extends GetxController {
   void selectVariation(String namaVariasi, Map<String, dynamic> opsi) {
     selectedVariation[namaVariasi] = opsi;
     selectedVariation.refresh();
+  }
+
+  Future<void> openWhatsApp() async {
+    final message = Uri.encodeComponent(
+      'Permisi saya tertarik dan ingin bertanya terkait produk ${data['nama_produk']}',
+    );
+    final url = Uri.parse(
+      'https://wa.me/${storeData['no_telpon']}?text=$message',
+    );
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      Get.snackbar(
+        'Gagal',
+        'Tidak dapat membuka Whatsapp',
+        backgroundColor: Colors.red,
+      );
+    }
   }
 }

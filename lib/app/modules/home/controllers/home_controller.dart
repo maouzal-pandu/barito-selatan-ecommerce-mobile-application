@@ -108,4 +108,10 @@ class HomeController extends GetxController {
 
     isLogin.value = false;
   }
+
+  Future<void> refreshProducts() async {
+    products.clear();
+
+    loadProducts();
+  }
 }

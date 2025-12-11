@@ -98,7 +98,9 @@ class HomeView extends GetView<HomeController> {
 
                     // drawer header content
                     controller.isLogin.value
-                        ? Padding(
+                        ?
+                          // if user login
+                          Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -106,29 +108,66 @@ class HomeView extends GetView<HomeController> {
                               children: [
                                 Obx(
                                   () => controller.profilePicture.value.isEmpty
-                                      ? CircleAvatar(
+                                      ?
+                                        // if user didn't have profile picture
+                                        CircleAvatar(
                                           radius: 40,
-                                          child: Icon(Icons.person, size: 60),
+                                          child: Icon(Icons.person, size: 65),
                                         )
                                       : controller.profilePicture.value
                                             .contains('/asset/foto_user/')
                                       ? ClipOval(
                                           child: CircleAvatar(
                                             radius: 40,
+
+                                            backgroundColor:
+                                                const Color.fromRGBO(
+                                                  240,
+                                                  240,
+                                                  240,
+                                                  1,
+                                                ),
                                             child: Image.network(
                                               controller.profilePicture.value,
                                               fit: BoxFit.fill,
+                                              errorBuilder:
+                                                  (
+                                                    context,
+                                                    error,
+                                                    stackTrace,
+                                                  ) => Icon(
+                                                    Icons.person_rounded,
+                                                    size: 65,
+                                                    color: Colors.amber[800],
+                                                  ),
                                             ),
                                           ),
                                         )
                                       : ClipOval(
                                           child: CircleAvatar(
                                             radius: 40,
+                                            backgroundColor:
+                                                const Color.fromRGBO(
+                                                  240,
+                                                  240,
+                                                  240,
+                                                  1,
+                                                ),
                                             child: Image.file(
                                               File(
                                                 controller.profilePicture.value,
                                               ),
                                               fit: BoxFit.fill,
+                                              errorBuilder:
+                                                  (
+                                                    context,
+                                                    error,
+                                                    stackTrace,
+                                                  ) => Icon(
+                                                    Icons.person_rounded,
+                                                    size: 65,
+                                                    color: Colors.amber[800],
+                                                  ),
                                             ),
                                           ),
                                         ),
@@ -136,6 +175,7 @@ class HomeView extends GetView<HomeController> {
 
                                 SizedBox(height: 10),
 
+                                // Username
                                 Text(
                                   controller.username.value,
                                   style: TextStyle(
@@ -147,7 +187,9 @@ class HomeView extends GetView<HomeController> {
                               ],
                             ),
                           )
-                        : const SizedBox.shrink(),
+                        :
+                          // if user didn't login
+                          const SizedBox.shrink(),
                   ],
                 ),
               ),
@@ -262,162 +304,165 @@ class HomeView extends GetView<HomeController> {
                 child: CircularProgressIndicator(color: Colors.amber),
               )
             :
-              // show products
-              SingleChildScrollView(
-                controller: controller.scrollController,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(16),
+              // products
+              RefreshIndicator(
+                onRefresh: () => controller.refreshProducts(),
+                child: SingleChildScrollView(
+                  controller: controller.scrollController,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(16),
+                      ),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.center,
+                        colors: [
+                          Color(0xFFFFFFFF),
+                          Color.fromRGBO(240, 240, 240, 1),
+                        ],
+                      ),
                     ),
-                    gradient: const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.center,
-                      colors: [
-                        Color(0xFFFFFFFF),
-                        Color.fromRGBO(240, 240, 240, 1),
-                      ],
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: GridView.builder(
-                      // controller: controller.innerScrollController,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount:
-                          controller.products.length +
-                          (controller.isLoadingMoreProducts.value ? 1 : 0),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.65,
-                            mainAxisSpacing: 2.5,
-                            crossAxisSpacing: 2.5,
-                          ),
-                      itemBuilder: (context, index) {
-                        if (index == controller.products.length &&
-                            controller.isLoadingMoreProducts.value) {
-                          return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: CircularProgressIndicator(
-                                color: Colors.amber,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: GridView.builder(
+                        // controller: controller.innerScrollController,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount:
+                            controller.products.length +
+                            (controller.isLoadingMoreProducts.value ? 1 : 0),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.65,
+                              mainAxisSpacing: 2.5,
+                              crossAxisSpacing: 2.5,
+                            ),
+                        itemBuilder: (context, index) {
+                          if (index == controller.products.length &&
+                              controller.isLoadingMoreProducts.value) {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: CircularProgressIndicator(
+                                  color: Colors.amber,
+                                ),
+                              ),
+                            );
+                          }
+
+                          final item = controller.products[index];
+                          final gambarString = item['gambar'] as String? ?? '';
+                          final gambarList = gambarString.split(';');
+                          final gambarUtama = gambarList.isNotEmpty
+                              ? gambarList.first
+                              : '';
+
+                          return InkWell(
+                            onTap: () => Get.toNamed(
+                              '/product-details',
+                              arguments: {
+                                'id_product': item['id_produk'],
+                                'id_reseller': item['id_reseller'],
+                              },
+                              parameters: {'tag': item['id_produk']},
+                            ),
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              color: const Color(0xFFFFFFFF),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  AspectRatio(
+                                    aspectRatio: 1,
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(12),
+                                      ),
+                                      child: Image.network(
+                                        gambarUtama,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                              return Container(
+                                                color: Colors.grey[300],
+                                                child: const Icon(
+                                                  Icons.broken_image,
+                                                  size: 50,
+                                                ),
+                                              );
+                                            },
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 8.0,
+                                      right: 8,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      // mainAxisAlignment:
+                                      // MainAxisAlignment.spaceAround,
+                                      children: [
+                                        const SizedBox(height: 2.5),
+
+                                        Text(
+                                          item['nama_produk'] ?? '-',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(fontSize: 12),
+                                        ),
+
+                                        const SizedBox(height: 5),
+
+                                        Text(
+                                          NumberFormat.currency(
+                                            locale: 'id_ID',
+                                            symbol: 'Rp',
+                                          ).format(
+                                            int.tryParse(
+                                                  item['harga_konsumen'],
+                                                ) ??
+                                                0,
+                                          ),
+                                          style: TextStyle(
+                                            color: Colors.amber[900],
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 5),
+
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.pin_drop_rounded,
+                                              size: 12,
+                                              color: Colors.grey[700],
+                                            ),
+                                            Text(
+                                              item['subdistrict_name'] ?? '',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey[700],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           );
-                        }
-
-                        final item = controller.products[index];
-                        final gambarString = item['gambar'] as String? ?? '';
-                        final gambarList = gambarString.split(';');
-                        final gambarUtama = gambarList.isNotEmpty
-                            ? gambarList.first
-                            : '';
-
-                        return InkWell(
-                          onTap: () => Get.toNamed(
-                            '/product-details',
-                            arguments: {
-                              'id_product': item['id_produk'],
-                              'id_reseller': item['id_reseller'],
-                            },
-                            parameters: {'tag': item['id_produk']},
-                          ),
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            color: const Color(0xFFFFFFFF),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                AspectRatio(
-                                  aspectRatio: 1,
-                                  child: ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(12),
-                                    ),
-                                    child: Image.network(
-                                      gambarUtama,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                            return Container(
-                                              color: Colors.grey[300],
-                                              child: const Icon(
-                                                Icons.broken_image,
-                                                size: 50,
-                                              ),
-                                            );
-                                          },
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 8.0,
-                                    right: 8,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    // mainAxisAlignment:
-                                    // MainAxisAlignment.spaceAround,
-                                    children: [
-                                      const SizedBox(height: 2.5),
-
-                                      Text(
-                                        item['nama_produk'] ?? '-',
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-
-                                      const SizedBox(height: 5),
-
-                                      Text(
-                                        NumberFormat.currency(
-                                          locale: 'id_ID',
-                                          symbol: 'Rp',
-                                        ).format(
-                                          int.tryParse(
-                                                item['harga_konsumen'],
-                                              ) ??
-                                              0,
-                                        ),
-                                        style: TextStyle(
-                                          color: Colors.amber[900],
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-
-                                      const SizedBox(height: 5),
-
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.pin_drop_rounded,
-                                            size: 12,
-                                            color: Colors.grey[700],
-                                          ),
-                                          Text(
-                                            item['subdistrict_name'] ?? '',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey[700],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+                        },
+                      ),
                     ),
                   ),
                 ),
