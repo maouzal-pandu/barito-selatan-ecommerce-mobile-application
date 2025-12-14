@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:barsel_ecommerce_flutter_application_alter/app/data/services/item_service.dart';
 import 'package:barsel_ecommerce_flutter_application_alter/app/models/option_item.dart';
 import 'package:barsel_ecommerce_flutter_application_alter/app/models/product_variation.dart';
@@ -22,7 +24,7 @@ class AddProductController extends GetxController {
   final productEstimationController = TextEditingController();
 
   final productCategories = <Map<String, dynamic>>[].obs;
-
+  final productImages = [].obs;
   final productVariations = <ProductVariation>[].obs;
 
   final _itemService = ItemsService();
@@ -86,8 +88,28 @@ class AddProductController extends GetxController {
     super.onClose();
   }
 
-  void addProduct() {
-    if (!formKey.currentState!.validate()) return;
-    // prepare data & send to backend...
+  Future<void> addProduct() async {
+    if (formKey.currentState!.validate()) {
+      final variationsJson = productVariations.map((v) => v.toJson()).toList();
+      final encodedVariations = jsonEncode(variationsJson);
+
+      final response = await _itemService.uploadProduct(
+        categoryId: selectedCategoryId.value,
+        productName: productNameController.text,
+        weight: productWeightController.text,
+        minOrder: productMinOrderController.text,
+        price: productPriceController.text,
+        stock: productStockController.text,
+        sku: productSKUController.text,
+        description: productDescriptionController.text,
+        estimation: productEstimationController.text,
+        isPreorder: isPreOrder.value ? "1" : "0",
+        variations: encodedVariations,
+        images: productImages,
+        resellerId: '',
+        productType: '',
+        productUnit: '',
+      );
+    }
   }
 }

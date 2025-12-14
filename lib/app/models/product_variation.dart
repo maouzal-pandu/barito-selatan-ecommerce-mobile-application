@@ -16,4 +16,12 @@ class ProductVariation {
       o.dispose();
     }
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "variation_name": name.text.trim(),
+      "variation_values": options.map((o) => o.name.text.trim()).toList(),
+      "variation_prices": options.map((o) => o.price.text.trim()).toList(),
+    };
+  }
 }

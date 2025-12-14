@@ -22,6 +22,27 @@ class AddProductView extends GetView<AddProductController> {
                 children: [
                   const SizedBox(height: 10),
 
+                  // Product Image (Max. 5)
+                  Obx(
+                    () => Row(
+                      children: List.generate(controller.productImages.length, (
+                        index,
+                      ) {
+                        final productImagePath =
+                            controller.productImages[index];
+
+                        return Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.amber),
+                          ),
+                          child: Image.file(productImagePath),
+                        );
+                      }),
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
                   // Category Dropdown
                   Container(
                     decoration: BoxDecoration(
@@ -369,12 +390,6 @@ class VariationItem extends GetView<AddProductController> {
                       border: OutlineInputBorder(),
                       isDense: true,
                     ),
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) {
-                        return "Nama variasi tidak boleh kosong";
-                      }
-                      return null;
-                    },
                   ),
                 ),
                 const SizedBox(width: 8),

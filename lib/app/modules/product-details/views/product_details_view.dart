@@ -34,7 +34,7 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                     Stack(
                       children: [
                         // Product images
-                        controller.productImages.length > 1
+                        controller.productImages.isNotEmpty
                             ? SizedBox(
                                 height: 300,
                                 width: double.infinity,
@@ -53,11 +53,24 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                                   },
                                 ),
                               )
-                            : Image.network(
-                                controller.productImages[0],
-                                width: double.infinity,
+                            : SizedBox(
                                 height: 300,
-                                fit: BoxFit.fill,
+                                width: double.infinity,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.broken_image,
+                                      size: 60,
+                                      color: Colors.grey,
+                                    ),
+
+                                    const Text(
+                                      'Produk tidak memiliki gambar',
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
                               ),
 
                         // App bar.
@@ -82,32 +95,34 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                         ),
 
                         // Product image indicator
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          bottom: 10,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: IntrinsicWidth(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Color.fromRGBO(0, 0, 0, 0.5),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Obx(
-                                  () => Text(
-                                    '${controller.currentImageIndex.value + 1}/${controller.productImages.length}',
-                                    style: TextStyle(color: Colors.white),
+                        controller.productImages.isNotEmpty
+                            ? Positioned(
+                                left: 0,
+                                right: 0,
+                                bottom: 10,
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: IntrinsicWidth(
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Color.fromRGBO(0, 0, 0, 0.5),
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Obx(
+                                        () => Text(
+                                          '${controller.currentImageIndex.value + 1}/${controller.productImages.length}',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        ),
+                              )
+                            : const SizedBox.shrink(),
                       ],
                     ),
 

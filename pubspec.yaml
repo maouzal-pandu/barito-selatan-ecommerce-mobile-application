@@ -70,7 +70,7 @@ flutter:
     - assets/images/didnt_have_store.png
     - assets/images/empty-box.png
     - assets/images/whatsapp-icon.png
-
+    - assets/images/product-not-found.png
   fonts:
     - family: Poppins
       fonts:

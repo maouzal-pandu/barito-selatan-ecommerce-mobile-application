@@ -58,13 +58,14 @@ class ItemsService {
   Future<Map<String, dynamic>> categoryProducts(
     String category, {
     int page = 1,
+    String? sort,
   }) async {
     try {
       final encodedCategory = Uri.encodeComponent(category);
 
       final response = await http.get(
         Uri.parse(
-          '$url/searchBasedCategory?category=$encodedCategory&page=$page&limit=8',
+          '$url/searchBasedCategory?category=$encodedCategory&page=$page&limit=8&sort=$sort',
         ),
       );
 
@@ -247,6 +248,90 @@ class ItemsService {
       }
     } catch (e) {
       throw Exception('Error from item service class | Error : $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> uploadProduct({
+    required String categoryId,
+    required String productName,
+    required String weight,
+    required String minOrder,
+    required String price,
+    required String stock,
+    required String sku,
+    required String description,
+    required String estimation,
+    required String isPreorder,
+    required String variations,
+    required List images,
+    required String resellerId,
+    required String productType,
+    required String productUnit,
+  }) async {
+    try {
+      final req = http.MultipartRequest("POST", Uri.parse('$url/addProduct'));
+
+      req.fields["category_id"] = categoryId;
+      req.fields["product_name"] = productName;
+      req.fields["product_weight"] = weight;
+      req.fields["product_min_order"] = minOrder;
+      req.fields["product_price"] = price;
+      req.fields["product_stock"] = stock;
+      req.fields["product_sku"] = sku;
+      req.fields["product_description"] = description;
+      req.fields["product_pre_order_estimation"] = estimation;
+      req.fields["product_type"] = productType;
+      req.fields["reseller_id"] = resellerId;
+      req.fields["variations"] = variations;
+      req.fields["product_unit"] = productUnit;
+
+      for (int i = 0; i < images.length; i++) {
+        req.files.add(
+          await http.MultipartFile.fromPath("image${i + 1}", images[i].path),
+        );
+      }
+
+      final res = await req.send();
+      final responseBody = await res.stream.bytesToString();
+      final decodedJson = jsonDecode(responseBody);
+
+      if (decodedJson['status'] == true) {
+        return {'status': true, 'message': decodedJson['message']};
+      } else {
+        return {'status': false};
+      }
+    } catch (e) {
+      throw Exception('Error : $e');
+    }
+  }
+
+  // Search product use keyword
+  Future<Map<String, dynamic>> searchProducts({
+    String? keyword,
+    int page = 1,
+    String? sort,
+    int? categoryId,
+  }) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+          '$url/searchProducts?q=$keyword&page=$page&c_id=$categoryId&sort=$sort',
+        ),
+      );
+
+      final decodedJson = jsonDecode(response.body);
+
+      if (decodedJson['status'] == true) {
+        return {
+          'status': true,
+          'data': decodedJson['data'],
+          'total_pages': decodedJson['total_pages'],
+        };
+      } else {
+        return {'status': false};
+      }
+    } catch (e) {
+      throw Exception('Error : $e');
     }
   }
 }

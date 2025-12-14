@@ -12,7 +12,16 @@ class SearchResultController extends GetxController {
   final currentProductPage = 0.obs;
   final totalProductPage = 0.obs;
 
+  // if from category button
+  final isCategory = false.obs;
   final categoryName = ''.obs;
+  // if using keyword
+  final searchKeyword = ''.obs;
+
+  // filter variables
+  final minPrice = 0.obs;
+  final maxPrice = 100000.obs;
+  final selectedSort = ''.obs; // terbaru, termurah, termahal
 
   final products = <Map<String, dynamic>>[].obs;
 
@@ -22,8 +31,13 @@ class SearchResultController extends GetxController {
     final args = Get.arguments;
 
     if (args['category'] == true) {
+      isCategory.value = args['category'];
       categoryName.value = args['category_name'];
       loadProducts();
+    } else {
+      searchKeyword.value = args['keyword'];
+      loadProducts();
+      // products.assignAll(List<Map<String, dynamic>>.from(args['products']));
     }
 
     scrollController.addListener(() {
@@ -40,13 +54,29 @@ class SearchResultController extends GetxController {
     try {
       isLoading.value = true;
 
-      final response = await _itemService.categoryProducts(categoryName.value);
+      if (isCategory.value) {
+        final response = await _itemService.categoryProducts(
+          categoryName.value,
+          sort: selectedSort.value,
+        );
 
-      if (response['status'] == true) {
-        currentProductPage.value = 1;
-        totalProductPage.value = response['total_pages'];
-        products.addAll(response['data']);
-      } else {}
+        if (response['status'] == true) {
+          currentProductPage.value = 1;
+          totalProductPage.value = response['total_pages'];
+          products.addAll(response['data']);
+        }
+      } else {
+        final response = await _itemService.searchProducts(
+          keyword: searchKeyword.value,
+          sort: selectedSort.value,
+        );
+
+        if (response['status'] == true) {
+          currentProductPage.value = 1;
+          totalProductPage.value = response['total_pages'];
+          products.addAll(List<Map<String, dynamic>>.from(response['data']));
+        }
+      }
     } catch (e) {
       Get.snackbar('Error', '$e', backgroundColor: Colors.red);
     } finally {
@@ -56,21 +86,73 @@ class SearchResultController extends GetxController {
 
   Future<void> loadMoreProducts() async {
     try {
-      isLoadingMoreProducts.value = true;
-      currentProductPage.value++;
+      if (isCategory.value) {
+        isLoadingMoreProducts.value = true;
+        currentProductPage.value++;
 
-      final result = await _itemService.categoryProducts(
-        categoryName.value,
-        page: currentProductPage.value,
-      );
+        final response = await _itemService.categoryProducts(
+          categoryName.value,
+          sort: selectedSort.value,
+          page: currentProductPage.value,
+        );
 
-      if (result['status'] == true) {
-        products.addAll(result['data']);
+        if (response['status'] == true) {
+          products.addAll(response['data']);
+        }
+      } else {
+        isLoadingMoreProducts.value = true;
+        currentProductPage.value++;
+
+        final response = await _itemService.searchProducts(
+          keyword: searchKeyword.value,
+          page: currentProductPage.value,
+          sort: selectedSort.value,
+        );
+
+        if (response['status'] == true) {
+          products.addAll(List<Map<String, dynamic>>.from(response['data']));
+        }
       }
     } catch (e) {
       Get.snackbar('Error', '$e', backgroundColor: Colors.red);
     } finally {
       isLoadingMoreProducts.value = false;
+    }
+  }
+
+  Future<void> applyFilter() async {
+    try {
+      isLoading.value = true;
+
+      products.clear();
+
+      if (isCategory.value) {
+        final response = await _itemService.categoryProducts(
+          categoryName.value,
+          sort: selectedSort.value,
+        );
+
+        if (response['status'] == true) {
+          currentProductPage.value = 1;
+          totalProductPage.value = response['total_pages'];
+          products.addAll(response['data']);
+        }
+      } else {
+        final response = await _itemService.searchProducts(
+          keyword: searchKeyword.value,
+          sort: selectedSort.value,
+        );
+
+        if (response['status'] == true) {
+          currentProductPage.value = 1;
+          totalProductPage.value = response['total_pages'];
+          products.addAll(List<Map<String, dynamic>>.from(response['data']));
+        }
+      }
+    } catch (e) {
+      Get.snackbar('Error', '$e', backgroundColor: Colors.red);
+    } finally {
+      isLoading.value = false;
     }
   }
 }

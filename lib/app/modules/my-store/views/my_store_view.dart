@@ -10,6 +10,8 @@ class MyStoreView extends GetView<MyStoreController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(240, 240, 240, 1),
+
       body: Obx(
         () => controller.isLogin.value == false
             ? _buildNotLogin()
@@ -127,57 +129,152 @@ class MyStoreView extends GetView<MyStoreController> {
                   ),
                 ),
 
-                // SizedBox(
-                //   height: 125,
-                //   child: Row(
-                //     children: [
-                //       Expanded(
-                //         child: Column(
-                //           mainAxisAlignment: MainAxisAlignment.center,
-                //           children: [
-                //             const Icon(
-                //               Icons.rectangle_rounded,
-                //               color: Colors.amber,
-                //             ),
+                const SizedBox(height: 10),
 
-                //             const SizedBox(height: 15),
+                // Store activity
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFFFFF),
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    border: Border.all(color: Colors.grey[400]!),
+                  ),
+                  height: 100,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        // Not paid yet
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.green[800],
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(16),
+                                  ),
+                                ),
+                                child: IconButton(
+                                  onPressed: () {},
+                                  icon: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.amber,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(16),
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.money_off_csred_rounded,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                ),
+                              ),
 
-                //             const Text('Jumlah Produk'),
+                              const Text(
+                                'Belum Di Bayar',
+                                style: TextStyle(fontSize: 12),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
 
-                //             const SizedBox(height: 7.5),
+                        // Waiting confirmation reseller
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.green[800],
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(16),
+                                  ),
+                                ),
+                                child: IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.timelapse,
+                                    color: Colors.amber,
+                                  ),
+                                ),
+                              ),
 
-                //             Text('data'),
-                //           ],
-                //         ),
-                //       ),
+                              const Text(
+                                'Menunggu Konfirmasi',
+                                style: TextStyle(fontSize: 12),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
 
-                //       Expanded(
-                //         child: Column(
-                //           mainAxisAlignment: MainAxisAlignment.center,
-                //           children: [
-                //             const Icon(
-                //               Icons.rectangle_rounded,
-                //               color: Colors.amber,
-                //             ),
+                        // Dikirim
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.green[800],
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(16),
+                                  ),
+                                ),
+                                child: IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.delivery_dining_rounded,
+                                    color: Colors.amber,
+                                  ),
+                                ),
+                              ),
 
-                //             const SizedBox(height: 15),
+                              const Text(
+                                'Dikirim',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
 
-                //             const Text('Jumlah Produk'),
+                        // Selesai
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.green[800],
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(16),
+                                  ),
+                                ),
+                                child: IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.star_rounded,
+                                    color: Colors.amber,
+                                  ),
+                                ),
+                              ),
 
-                //             const SizedBox(height: 7.5),
+                              const Text(
+                                'Selesai',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
 
-                //             Text('data'),
-                //           ],
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-
-                // const SizedBox(
-                //   width: double.infinity,
-                //   child: Divider(indent: 16, endIndent: 16),
-                // ),
+                const SizedBox(height: 10),
 
                 // button add prodcut
                 Align(

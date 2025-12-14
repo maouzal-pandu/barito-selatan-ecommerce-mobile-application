@@ -61,6 +61,12 @@ class ProductDetailsController extends GetxController {
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    scrollController.dispose();
+  }
+
   Future<void> _initializeData() async {
     await loadProduct();
     loadRelatedProducts();
@@ -90,8 +96,10 @@ class ProductDetailsController extends GetxController {
       productImages.assignAll(response['data']['gambar']);
       // productVariations.assignAll(data['variasi']);
 
+      final Map<String, dynamic> variasi = response['data']['variasi'];
+
       // Load variations
-      if (response['data']["variasi"] != null) {
+      if (variasi.isNotEmpty) {
         productVariations.value =
             (response['data']["variasi"] as Map<String, dynamic>).map(
               (key, value) =>
@@ -122,7 +130,9 @@ class ProductDetailsController extends GetxController {
         return;
       }
 
-      reviews.assignAll(response['data']);
+      if (response['data'] != null) {
+        reviews.assignAll(response['data']);
+      }
     } catch (e) {
       Get.showSnackbar(
         GetSnackBar(

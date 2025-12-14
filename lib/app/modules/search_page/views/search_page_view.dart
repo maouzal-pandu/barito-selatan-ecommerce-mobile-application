@@ -12,23 +12,46 @@ class SearchPageView extends GetView<SearchPageController> {
       backgroundColor: Color.fromRGBO(240, 240, 240, 1),
 
       appBar: AppBar(
+        // Search bar
         title: Container(
           height: 40,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(20)),
             color: Colors.white,
           ),
-          child: TextField(
-            decoration: InputDecoration(
-              border: UnderlineInputBorder(borderSide: BorderSide.none),
-              contentPadding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+          child: Form(
+            key: controller.formKey,
+            child: TextFormField(
+              controller: controller.keywordController,
+              onEditingComplete: () {
+                controller.searchProducts();
+              },
+              decoration: InputDecoration(
+                border: UnderlineInputBorder(borderSide: BorderSide.none),
+                contentPadding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+              ),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return '';
+                }
+
+                return null;
+              },
             ),
           ),
         ),
+
         centerTitle: true,
         actionsPadding: EdgeInsets.only(right: 8),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.search_rounded)),
+          IconButton(
+            onPressed: () => controller.searchProducts(),
+            icon: Icon(
+              Icons.search_rounded,
+              color: Colors.green[800],
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
         backgroundColor: Colors.amber,
       ),

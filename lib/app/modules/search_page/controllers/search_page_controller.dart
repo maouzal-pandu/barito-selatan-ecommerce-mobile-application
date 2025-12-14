@@ -9,6 +9,9 @@ class SearchPageController extends GetxController {
 
   final isLoading = false.obs;
 
+  final formKey = GlobalKey<FormState>();
+  final keywordController = TextEditingController();
+
   @override
   void onInit() {
     super.onInit();
@@ -31,6 +34,15 @@ class SearchPageController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> searchProducts() async {
+    if (formKey.currentState!.validate()) {
+      Get.toNamed(
+        '/search-result',
+        arguments: {'keyword': keywordController.text},
+      );
     }
   }
 }
