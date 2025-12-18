@@ -1,3 +1,4 @@
+import 'package:barsel_ecommerce_flutter_application_alter/app/data/services/item_service.dart';
 import 'package:barsel_ecommerce_flutter_application_alter/app/data/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,6 +10,8 @@ class MyStoreController extends GetxController {
   final userId = ''.obs;
   final storeName = ''.obs;
   final storeProfilePicture = ''.obs;
+  final idReseller = ''.obs;
+  final products = <Map<String, dynamic>>[].obs;
 
   // first time load boolean
   final isLoading = false.obs;
@@ -17,12 +20,30 @@ class MyStoreController extends GetxController {
   final isLoadingMoreProducts = false.obs;
 
   final _userServices = UserService();
-  final products = <Map<String, dynamic>>[].obs;
+  final _itemService = ItemsService();
+
+  final scrollController = ScrollController();
+  final currentProductPage = 0.obs;
+  final totalProductPage = 0.obs;
 
   @override
   void onInit() {
     super.onInit();
-    getStoreInfo();
+    _initializeFunc();
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+              scrollController.position.maxScrollExtent - 25 &&
+          !isLoadingMoreProducts.value &&
+          currentProductPage.value < totalProductPage.value) {
+        loadMoreProducts();
+      }
+    });
+  }
+
+  void _initializeFunc() async {
+    await getStoreInfo();
+    storeProducts();
   }
 
   Future<void> getStoreInfo() async {
@@ -42,6 +63,8 @@ class MyStoreController extends GetxController {
           final data = response['data'];
           storeName.value = data['nama_reseller'];
           storeProfilePicture.value = data['foto'] ?? '';
+
+          idReseller.value = data['id_reseller'];
 
           prefs.setString('reseller_id', data['id_reseller']);
           prefs.setString('store_name', data['nama_reseller']);
@@ -77,10 +100,70 @@ class MyStoreController extends GetxController {
   Future<void> storeProducts() async {
     try {
       isLoadingMoreProducts.value = true;
+
+      final response = await _itemService.storeProduct(idReseller.value);
+
+      if (response['status'] == true) {
+        currentProductPage.value = 1;
+        totalProductPage.value = response['total_pages'];
+        products.assignAll(List<Map<String, dynamic>>.from(response['data']));
+      } else {
+        Get.snackbar(
+          'Gagal Mengambil Product',
+          response['message'],
+          backgroundColor: Colors.redAccent,
+        );
+      }
     } catch (e) {
       Get.snackbar('Error', '$e', backgroundColor: Colors.redAccent);
     } finally {
       isLoadingMoreProducts.value = false;
+    }
+  }
+
+  Future<void> loadMoreProducts() async {
+    try {
+      isLoadingMoreProducts.value = true;
+      currentProductPage.value++;
+
+      final response = await _itemService.storeProduct(
+        idReseller.value,
+        page: currentProductPage.value,
+      );
+
+      if (response['status'] == true) {
+        products.addAll(List<Map<String, dynamic>>.from(response['data']));
+      } else {
+        Get.snackbar(
+          'Gagal Mengambil Product',
+          response['message'],
+          backgroundColor: Colors.redAccent,
+        );
+      }
+    } catch (e) {
+      Get.snackbar('Error', '$e', backgroundColor: Colors.redAccent);
+    } finally {
+      isLoadingMoreProducts.value = false;
+    }
+  }
+
+  Future<void> deleteSelectedProduct(String idProduct, int index) async {
+    try {
+      final response = await _itemService.deleteProduct(idProduct);
+
+      print(response);
+
+      if (response['status'] == true) {
+        products.removeAt(index);
+      } else {
+        Get.snackbar(
+          'Gagal Mengambil Product',
+          response['message'],
+          backgroundColor: Colors.redAccent,
+        );
+      }
+    } catch (e) {
+      Get.snackbar('Error', '$e', backgroundColor: Colors.redAccent);
     }
   }
 }

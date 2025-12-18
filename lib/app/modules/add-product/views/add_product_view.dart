@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/add_product_controller.dart';
@@ -12,351 +14,636 @@ class AddProductView extends GetView<AddProductController> {
 
       backgroundColor: Color.fromRGBO(240, 240, 240, 1),
 
-      body: SingleChildScrollView(
-        child: Form(
-          key: controller.formKey,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 10),
-
-                  // Product Image (Max. 5)
-                  Obx(
-                    () => Row(
-                      children: List.generate(controller.productImages.length, (
-                        index,
-                      ) {
-                        final productImagePath =
-                            controller.productImages[index];
-
-                        return Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.amber),
-                          ),
-                          child: Image.file(productImagePath),
-                        );
-                      }),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Category Dropdown
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFFFFF),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
+      body: Obx(
+        () => controller.isLoading.value
+            ? Center(child: CircularProgressIndicator(color: Colors.amber))
+            : SingleChildScrollView(
+                child: Form(
+                  key: controller.formKey,
+                  child: Center(
                     child: Padding(
-                      padding: EdgeInsetsGeometry.all(16),
-                      child: Obx(() {
-                        return DropdownButtonFormField<String>(
-                          decoration: const InputDecoration(
-                            labelText: 'Kategori Produk',
-                            border: OutlineInputBorder(),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                          ),
-                          initialValue:
-                              controller.selectedCategoryId.value.isEmpty
-                              ? null
-                              : controller.selectedCategoryId.value,
-                          items: controller.productCategories.map((item) {
-                            return DropdownMenuItem(
-                              value: item['id_kategori_produk'].toString(),
-                              child: Text(item['nama_kategori']),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            controller.selectedCategoryId.value = value ?? "";
-                          },
-                        );
-                      }),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Product Name
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFFFFF),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: TextFormField(
-                        controller: controller.productNameController,
-                        decoration: const InputDecoration(
-                          label: Text('Nama produk'),
-                          border: OutlineInputBorder(),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                        ),
-                        validator: (value) => value!.isEmpty
-                            ? 'Nama produk tidak boleh kosong'
-                            : null,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Product Weight, Minimal Order, Price, and stock
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFFFFF),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Column(
                         children: [
-                          // Product Weight
-                          TextFormField(
-                            controller: controller.productWeightController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              label: Text('Berat Produk (gram)'),
-                              border: OutlineInputBorder(),
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.always,
+                          const SizedBox(height: 10),
+
+                          // Product Image (Max. 5)
+                          Obx(
+                            () => Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFFFFF),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsetsGeometry.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('Foto Produk'),
+
+                                    const SizedBox(height: 10),
+
+                                    Row(
+                                      children: [
+                                        ...List.generate(
+                                          controller.productImages.length,
+                                          (index) {
+                                            final productImagePath =
+                                                controller.productImages[index];
+
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                right: 10,
+                                              ),
+                                              child: Stack(
+                                                clipBehavior: Clip.none,
+                                                children: [
+                                                  // === IMAGE ===
+                                                  Container(
+                                                    width: 50,
+                                                    height: 50,
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                        color: Colors.amber,
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            6,
+                                                          ),
+                                                    ),
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            4,
+                                                          ),
+                                                      child:
+                                                          productImagePath
+                                                              .toString()
+                                                              .contains(
+                                                                '/asset/foto_produk/',
+                                                              )
+                                                          ? Image.network(
+                                                              productImagePath,
+                                                              fit: BoxFit.cover,
+                                                            )
+                                                          : Image.file(
+                                                              File(
+                                                                productImagePath,
+                                                              ),
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                    ),
+                                                  ),
+
+                                                  // === REMOVE BUTTON (X) ===
+                                                  Positioned(
+                                                    top: -6,
+                                                    right: -6,
+                                                    child: InkWell(
+                                                      onTap: () =>
+                                                          showDeleteImageDialog(
+                                                            context,
+                                                            index,
+                                                            productImagePath,
+                                                          ),
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets.all(
+                                                              2,
+                                                            ),
+                                                        decoration:
+                                                            const BoxDecoration(
+                                                              color: Colors.red,
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                            ),
+                                                        child: const Icon(
+                                                          Icons.close,
+                                                          size: 14,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        ),
+
+                                        // === ADD BUTTON (+) ===
+                                        if (controller.productImages.length < 5)
+                                          InkWell(
+                                            onTap: () => showModalBottomSheet(
+                                              context: context,
+                                              builder: (context) {
+                                                return Column(
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                            top: 8.0,
+                                                          ),
+                                                      child: const Text(
+                                                        'Pilih sumber foto',
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: double.infinity,
+                                                      child: Divider(),
+                                                    ),
+
+                                                    const SizedBox(height: 25),
+
+                                                    ListTile(
+                                                      leading: const Icon(
+                                                        Icons.camera_rounded,
+                                                      ),
+                                                      title: const Text(
+                                                        'Kamera',
+                                                      ),
+                                                      onTap: () => controller
+                                                          .takePicture(),
+                                                    ),
+
+                                                    ListTile(
+                                                      leading: const Icon(
+                                                        Icons.photo_rounded,
+                                                      ),
+                                                      title: const Text(
+                                                        'Galeri',
+                                                      ),
+                                                      onTap: () => controller
+                                                          .pictureFromGallery(),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            ),
+                                            child: Container(
+                                              width: 50,
+                                              height: 50,
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: Colors.amber,
+                                                  width: 2,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                              ),
+                                              child: const Icon(
+                                                Icons.add_rounded,
+                                                color: Colors.amber,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Berat produk tidak boleh kosong';
-                              }
-                              if (int.tryParse(value)! <= 0) {
-                                return 'Berat tidak boleh kurang dari 0';
-                              }
-                              return null;
-                            },
                           ),
 
-                          const SizedBox(height: 7.5),
+                          const SizedBox(height: 10),
 
-                          // Product Minimal Order
-                          TextFormField(
-                            controller: controller.productMinOrderController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              label: Text('Minimal order'),
-                              border: OutlineInputBorder(),
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.always,
+                          // Category Dropdown
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFFFFF),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.grey.shade300),
                             ),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Minimal order tidak boleh kosong';
-                              }
-                              if (int.tryParse(value)! <= 0) {
-                                return 'Minimal order harus lebih dari 0';
-                              }
-                              return null;
-                            },
+                            child: Padding(
+                              padding: EdgeInsetsGeometry.all(16),
+                              child: Obx(() {
+                                return DropdownButtonFormField<String>(
+                                  decoration: const InputDecoration(
+                                    labelText: 'Kategori Produk',
+                                    border: OutlineInputBorder(),
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                  ),
+                                  initialValue:
+                                      controller
+                                          .selectedCategoryId
+                                          .value
+                                          .isEmpty
+                                      ? null
+                                      : controller.selectedCategoryId.value,
+                                  items: controller.productCategories.map((
+                                    item,
+                                  ) {
+                                    return DropdownMenuItem(
+                                      value: item['id_kategori_produk']
+                                          .toString(),
+                                      child: Text(item['nama_kategori']),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    controller.selectedCategoryId.value =
+                                        value ?? "";
+                                  },
+                                );
+                              }),
+                            ),
                           ),
 
-                          const SizedBox(height: 7.5),
+                          const SizedBox(height: 10),
 
-                          // Product Price
-                          TextFormField(
-                            controller: controller.productPriceController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              label: Text('Harga produk'),
-                              border: OutlineInputBorder(),
-                              prefixText: 'Rp. ',
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.always,
+                          // Product Name
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFFFFF),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.grey.shade300),
                             ),
-                            validator: (value) => value!.isEmpty
-                                ? 'Harga produk tidak boleh kosong'
-                                : null,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: TextFormField(
+                                controller: controller.productNameController,
+                                decoration: const InputDecoration(
+                                  label: Text('Nama produk'),
+                                  border: OutlineInputBorder(),
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                ),
+                                validator: (value) => value!.isEmpty
+                                    ? 'Nama produk tidak boleh kosong'
+                                    : null,
+                              ),
+                            ),
                           ),
 
-                          const SizedBox(height: 7.5),
+                          const SizedBox(height: 10),
 
-                          // Product Stock
-                          TextFormField(
-                            controller: controller.productStockController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              label: Text('Stok Produk'),
-                              border: OutlineInputBorder(),
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.always,
+                          // Product Weight, Minimal Order, Price, and stock
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFFFFF),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.grey.shade300),
                             ),
-                            validator: (value) => value!.isEmpty
-                                ? 'Stok produk tidak boleh kosong'
-                                : null,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                children: [
+                                  // Product Weight
+                                  TextFormField(
+                                    controller:
+                                        controller.productWeightController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                      label: Text('Berat Produk (gram)'),
+                                      border: OutlineInputBorder(),
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.always,
+                                    ),
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return 'Berat produk tidak boleh kosong';
+                                      }
+                                      if (int.tryParse(value)! <= 0) {
+                                        return 'Berat tidak boleh kurang dari 0';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+
+                                  const SizedBox(height: 20),
+
+                                  // Product Minimal Order
+                                  TextFormField(
+                                    controller:
+                                        controller.productMinOrderController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                      label: Text('Minimal order'),
+                                      border: OutlineInputBorder(),
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.always,
+                                    ),
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return 'Minimal order tidak boleh kosong';
+                                      }
+                                      if (int.tryParse(value)! <= 0) {
+                                        return 'Minimal order harus lebih dari 0';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+
+                                  const SizedBox(height: 20),
+
+                                  // Product Price
+                                  TextFormField(
+                                    controller:
+                                        controller.productPriceController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                      label: Text('Harga produk'),
+                                      border: OutlineInputBorder(),
+                                      prefixText: 'Rp. ',
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.always,
+                                    ),
+                                    validator: (value) => value!.isEmpty
+                                        ? 'Harga produk tidak boleh kosong'
+                                        : null,
+                                  ),
+
+                                  const SizedBox(height: 20),
+
+                                  // Product Stock
+                                  TextFormField(
+                                    controller:
+                                        controller.productStockController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                      label: Text('Stok Produk'),
+                                      border: OutlineInputBorder(),
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.always,
+                                    ),
+                                    validator: (value) => value!.isEmpty
+                                        ? 'Stok produk tidak boleh kosong'
+                                        : null,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
+
+                          const SizedBox(height: 10),
+
+                          // SKU (Optional)
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFFFFF),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: TextFormField(
+                                controller: controller.productSKUController,
+                                decoration: const InputDecoration(
+                                  label: Text('Stock Keeping Unit (opsional)'),
+                                  border: OutlineInputBorder(),
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFFFFF),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                children: [
+                                  // Product unit
+                                  TextFormField(
+                                    // maxLines: 3,
+                                    controller:
+                                        controller.productUnitController,
+                                    decoration: const InputDecoration(
+                                      label: Text('Satuan (opsional)'),
+                                      helperText:
+                                          'Contoh : Sepasang, Unit, dan lain-lain.',
+                                      border: OutlineInputBorder(),
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.always,
+                                    ),
+                                    // validator: (value) => value!.isEmpty
+                                    //     ? 'Deskripsi tidak boleh kosong'
+                                    //     : null,
+                                  ),
+
+                                  const SizedBox(height: 20),
+
+                                  // Product type
+                                  DropdownButtonFormField(
+                                    decoration: InputDecoration(
+                                      labelText: 'Kategori Produk',
+                                      border: OutlineInputBorder(),
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.always,
+                                    ),
+                                    initialValue: controller.productType.value,
+                                    items: [
+                                      DropdownMenuItem(
+                                        value: 'Fisik',
+                                        child: const Text('Fisik'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'Digital',
+                                        child: const Text('Digital'),
+                                      ),
+                                    ],
+                                    onChanged: (value) =>
+                                        controller.productType.value = value!,
+                                  ),
+
+                                  const SizedBox(height: 20),
+
+                                  // Product Description
+                                  TextFormField(
+                                    maxLines: 3,
+                                    controller:
+                                        controller.productDescriptionController,
+                                    decoration: const InputDecoration(
+                                      label: Text(
+                                        'Deskripsi Produk (opsional)',
+                                      ),
+                                      border: OutlineInputBorder(),
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.always,
+                                    ),
+                                    validator: (value) => value!.isEmpty
+                                        ? 'Deskripsi tidak boleh kosong'
+                                        : null,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          // Is Product Preorder?
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFFFFF),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: DropdownButtonFormField<bool>(
+                                decoration: const InputDecoration(
+                                  labelText: 'Pre order',
+                                  border: OutlineInputBorder(),
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                ),
+                                initialValue: controller.isPreOrder.value,
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: false,
+                                    child: Text('Tidak'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: true,
+                                    child: Text('Ya'),
+                                  ),
+                                ],
+                                onChanged: (value) =>
+                                    controller.isPreOrder.value =
+                                        value ?? false,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          /// PRE ORDER ESTIMATION
+                          Obx(() {
+                            if (!controller.isPreOrder.value) {
+                              return const SizedBox.shrink();
+                            }
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFFFFF),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: TextFormField(
+                                  controller:
+                                      controller.productEstimationController,
+                                  keyboardType: TextInputType.number,
+                                  decoration: const InputDecoration(
+                                    label: Text('Estimasi Produk (hari)'),
+                                    border: OutlineInputBorder(),
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                  ),
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'Estimasi tidak boleh kosong';
+                                    }
+                                    if (int.tryParse(value)! <= 0) {
+                                      return 'Estimasi harus lebih dari 0';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            );
+                          }),
+
+                          const SizedBox(height: 10),
+
+                          // Variations
+                          Obx(() {
+                            return Column(
+                              children: List.generate(
+                                controller.productVariations.length,
+                                (index) => VariationItem(index: index),
+                              ),
+                            );
+                          }),
+
+                          const SizedBox(height: 10),
+
+                          /// ADD VARIATION BUTTON
+                          TextButton.icon(
+                            onPressed: controller.addVariation,
+                            icon: const Icon(
+                              Icons.add_circle,
+                              color: Colors.green,
+                            ),
+                            label: const Text('Tambah Varian'),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          /// SUBMIT BUTTON
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: FilledButton(
+                              onPressed: () {
+                                if (controller.isEdit.value) {
+                                  controller.updateSelectedProduct();
+                                  return;
+                                }
+
+                                controller.addProduct();
+                              },
+                              child: const Text('Tambah Produk'),
+                            ),
+                          ),
+
+                          const SizedBox(height: 30),
                         ],
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 10),
-
-                  // SKU (Optional)
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFFFFF),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: TextFormField(
-                        controller: controller.productSKUController,
-                        decoration: const InputDecoration(
-                          label: Text('Stock Keeping Unit (opsional)'),
-                          border: OutlineInputBorder(),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Product Description
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFFFFF),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: TextFormField(
-                        maxLines: 3,
-                        controller: controller.productDescriptionController,
-                        decoration: const InputDecoration(
-                          label: Text('Deskripsi Produk'),
-                          border: OutlineInputBorder(),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                        ),
-                        validator: (value) => value!.isEmpty
-                            ? 'Deskripsi tidak boleh kosong'
-                            : null,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Is Product Preorder?
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFFFFF),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: DropdownButtonFormField<bool>(
-                        decoration: const InputDecoration(
-                          labelText: 'Pre order',
-                          border: OutlineInputBorder(),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                        ),
-                        initialValue: controller.isPreOrder.value,
-                        items: const [
-                          DropdownMenuItem(value: false, child: Text('Tidak')),
-                          DropdownMenuItem(value: true, child: Text('Ya')),
-                        ],
-                        onChanged: (value) =>
-                            controller.isPreOrder.value = value ?? false,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  /// PRE ORDER ESTIMATION
-                  Obx(() {
-                    if (!controller.isPreOrder.value) {
-                      return const SizedBox.shrink();
-                    }
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFFFFF),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: TextFormField(
-                          controller: controller.productEstimationController,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            label: Text('Estimasi Produk (hari)'),
-                            border: OutlineInputBorder(),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                          ),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Estimasi tidak boleh kosong';
-                            }
-                            if (int.tryParse(value)! <= 0) {
-                              return 'Estimasi harus lebih dari 0';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    );
-                  }),
-
-                  const SizedBox(height: 10),
-
-                  // Variations
-                  Obx(() {
-                    return Column(
-                      children: List.generate(
-                        controller.productVariations.length,
-                        (index) => VariationItem(index: index),
-                      ),
-                    );
-                  }),
-
-                  const SizedBox(height: 10),
-
-                  /// ADD VARIATION BUTTON
-                  TextButton.icon(
-                    onPressed: controller.addVariation,
-                    icon: const Icon(Icons.add_circle, color: Colors.green),
-                    label: const Text('Tambah Varian'),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  /// SUBMIT BUTTON
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: FilledButton(
-                      onPressed: () => controller.addProduct(),
-                      child: const Text('Tambah Produk'),
-                    ),
-                  ),
-
-                  const SizedBox(height: 30),
-                ],
+                ),
               ),
-            ),
+      ),
+    );
+  }
+
+  void showDeleteImageDialog(BuildContext context, int index, String filename) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Hapus Foto'),
+        content: const Text('Apakah kamu yakin ingin menghapus foto ini?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back(); // close dialog
+            },
+            child: const Text('Batal'),
           ),
-        ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              if (filename.startsWith('http')) {
+                controller.deleteSelectedImage(filename, index);
+                Get.back();
+                return;
+              }
+              controller.productImages.removeAt(index);
+              Get.back(); // close dialog
+            },
+            child: const Text('Hapus'),
+          ),
+        ],
       ),
     );
   }
 }
 
 class VariationItem extends GetView<AddProductController> {
+  final int? id;
   final int index;
-  const VariationItem({super.key, required this.index});
+  const VariationItem({super.key, required this.index, this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -379,6 +666,8 @@ class VariationItem extends GetView<AddProductController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(varModel.id?.toString() ?? 'NO ID'),
+
             /// ========= Variation Name + Delete Button =========
             Row(
               children: [

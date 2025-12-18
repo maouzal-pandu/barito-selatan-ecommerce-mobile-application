@@ -86,6 +86,7 @@ class MyStoreView extends GetView<MyStoreController> {
     return RefreshIndicator(
       onRefresh: () => controller.getStoreInfo(),
       child: SingleChildScrollView(
+        controller: controller.scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
         child: Center(
           child: Padding(
@@ -320,171 +321,261 @@ class MyStoreView extends GetView<MyStoreController> {
                           ),
                         ),
                       )
-                    : SingleChildScrollView(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(16),
+                    : Obx(
+                        () => SingleChildScrollView(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(16),
+                              ),
+                              gradient: const LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.center,
+                                colors: [
+                                  Color(0xFFFFFFFF),
+                                  Color.fromRGBO(240, 240, 240, 1),
+                                ],
+                              ),
                             ),
-                            gradient: const LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.center,
-                              colors: [
-                                Color(0xFFFFFFFF),
-                                Color.fromRGBO(240, 240, 240, 1),
-                              ],
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                            child: GridView.builder(
-                              // controller: controller.innerScrollController,
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount:
-                                  controller.products.length +
-                                  (controller.isLoadingMoreProducts.value
-                                      ? 1
-                                      : 0),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    childAspectRatio: 0.65,
-                                    mainAxisSpacing: 2.5,
-                                    crossAxisSpacing: 2.5,
-                                  ),
-                              itemBuilder: (context, index) {
-                                if (index == controller.products.length &&
-                                    controller.isLoadingMoreProducts.value) {
-                                  return const Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: CircularProgressIndicator(
-                                        color: Colors.amber,
-                                      ),
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                              child: GridView.builder(
+                                // controller: controller.innerScrollController,
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount:
+                                    controller.products.length +
+                                    (controller.isLoadingMoreProducts.value
+                                        ? 1
+                                        : 0),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      childAspectRatio: 0.65,
+                                      mainAxisSpacing: 2.5,
+                                      crossAxisSpacing: 2.5,
                                     ),
-                                  );
-                                }
-
-                                final item = controller.products[index];
-                                final gambarString =
-                                    item['gambar'] as String? ?? '';
-                                final gambarList = gambarString.split(';');
-                                final gambarUtama = gambarList.isNotEmpty
-                                    ? gambarList.first
-                                    : '';
-
-                                return InkWell(
-                                  onTap: () => Get.toNamed(
-                                    '/item-details',
-                                    arguments: {
-                                      'id_product': item['id_produk'],
-                                      'name_product': item['nama_produk'],
-                                      'price_product': double.tryParse(
-                                        item['harga_konsumen'],
-                                      ),
-                                      'id_reseller': item['id_reseller'],
-                                      'subdistrict_reseller':
-                                          item['subdistrict_name'],
-                                    },
-                                  ),
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    color: const Color(0xFFFFFFFF),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        AspectRatio(
-                                          aspectRatio: 1,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                const BorderRadius.vertical(
-                                                  top: Radius.circular(12),
-                                                ),
-                                            child: Image.network(
-                                              gambarUtama,
-                                              fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (context, error, stackTrace) {
-                                                    return Container(
-                                                      color: Colors.grey[300],
-                                                      child: const Icon(
-                                                        Icons.broken_image,
-                                                        size: 50,
-                                                      ),
-                                                    );
-                                                  },
-                                            ),
-                                          ),
+                                itemBuilder: (context, index) {
+                                  if (index == controller.products.length &&
+                                      controller.isLoadingMoreProducts.value) {
+                                    return const Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: CircularProgressIndicator(
+                                          color: Colors.amber,
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            left: 8.0,
-                                            right: 8,
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            // mainAxisAlignment:
-                                            // MainAxisAlignment.spaceAround,
-                                            children: [
-                                              const SizedBox(height: 2.5),
+                                      ),
+                                    );
+                                  }
 
-                                              Text(
-                                                item['nama_produk'] ?? '-',
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(fontSize: 12),
-                                              ),
+                                  final item = controller.products[index];
+                                  final gambarString =
+                                      item['gambar'] as String? ?? '';
+                                  final gambarList = gambarString.split(';');
+                                  final gambarUtama = gambarList.isNotEmpty
+                                      ? gambarList.first
+                                      : '';
 
-                                              const SizedBox(height: 5),
-
-                                              Text(
-                                                NumberFormat.currency(
-                                                  locale: 'id_ID',
-                                                  symbol: 'Rp',
-                                                ).format(
-                                                  int.tryParse(
-                                                        item['harga_konsumen'],
-                                                      ) ??
-                                                      0,
-                                                ),
-                                                style: TextStyle(
-                                                  color: Colors.amber[900],
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-
-                                              const SizedBox(height: 5),
-
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.pin_drop_rounded,
-                                                    size: 12,
-                                                    color: Colors.grey[700],
+                                  return InkWell(
+                                    onTap: () => Get.toNamed(
+                                      '/item-details',
+                                      arguments: {
+                                        'id_product': item['id_produk'],
+                                        'name_product': item['nama_produk'],
+                                        'price_product': double.tryParse(
+                                          item['harga_konsumen'],
+                                        ),
+                                        'id_reseller': item['id_reseller'],
+                                        'subdistrict_reseller':
+                                            item['subdistrict_name'],
+                                      },
+                                    ),
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      color: const Color(0xFFFFFFFF),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          AspectRatio(
+                                            aspectRatio: 1,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  const BorderRadius.vertical(
+                                                    top: Radius.circular(12),
                                                   ),
-                                                  Text(
-                                                    item['subdistrict_name'] ??
-                                                        '',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey[700],
+                                              child: Stack(
+                                                fit: StackFit.expand,
+                                                children: [
+                                                  Image.network(
+                                                    gambarUtama,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder:
+                                                        (
+                                                          context,
+                                                          error,
+                                                          stackTrace,
+                                                        ) {
+                                                          return Container(
+                                                            color: Colors
+                                                                .grey[300],
+                                                            child: const Icon(
+                                                              Icons
+                                                                  .broken_image,
+                                                              size: 50,
+                                                            ),
+                                                          );
+                                                        },
+                                                  ),
+
+                                                  Positioned(
+                                                    top: 6,
+                                                    right: 6,
+                                                    child: Container(
+                                                      height: 30,
+                                                      width: 30,
+                                                      decoration:
+                                                          const BoxDecoration(
+                                                            color:
+                                                                Color.fromRGBO(
+                                                                  0,
+                                                                  0,
+                                                                  0,
+                                                                  0.5,
+                                                                ),
+                                                            shape:
+                                                                BoxShape.circle,
+                                                          ),
+                                                      child: PopupMenuButton<String>(
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        iconSize: 20,
+                                                        icon: Icon(
+                                                          Icons
+                                                              .more_horiz_rounded,
+                                                          color: Colors.amber,
+                                                        ),
+                                                        itemBuilder: (context) => [
+                                                          PopupMenuItem(
+                                                            onTap: () => Get.toNamed(
+                                                              '/add-product',
+                                                              arguments: {
+                                                                'edit': true,
+                                                                'id_produk':
+                                                                    item['id_produk'],
+                                                              },
+                                                            ),
+                                                            child:
+                                                                const ListTile(
+                                                                  leading: Icon(
+                                                                    Icons.edit,
+                                                                  ),
+                                                                  title: Text(
+                                                                    'Edit',
+                                                                  ),
+                                                                ),
+                                                          ),
+                                                          PopupMenuItem(
+                                                            onTap: () => controller
+                                                                .deleteSelectedProduct(
+                                                                  item['id_produk'],
+                                                                  index,
+                                                                ),
+                                                            value: 'delete',
+                                                            child: const ListTile(
+                                                              leading: Icon(
+                                                                Icons.delete,
+                                                                color:
+                                                                    Colors.red,
+                                                              ),
+                                                              title: Text(
+                                                                'Hapus',
+                                                                style: TextStyle(
+                                                                  color: Colors
+                                                                      .red,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                 ],
                                               ),
-                                            ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              left: 8.0,
+                                              right: 8,
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              // mainAxisAlignment:
+                                              // MainAxisAlignment.spaceAround,
+                                              children: [
+                                                const SizedBox(height: 2.5),
+
+                                                Text(
+                                                  item['nama_produk'] ?? '-',
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+
+                                                const SizedBox(height: 5),
+
+                                                Text(
+                                                  NumberFormat.currency(
+                                                    locale: 'id_ID',
+                                                    symbol: 'Rp',
+                                                  ).format(
+                                                    int.tryParse(
+                                                          item['harga_konsumen'],
+                                                        ) ??
+                                                        0,
+                                                  ),
+                                                  style: TextStyle(
+                                                    color: Colors.amber[900],
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+
+                                                const SizedBox(height: 5),
+
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.pin_drop_rounded,
+                                                      size: 12,
+                                                      color: Colors.grey[700],
+                                                    ),
+                                                    Text(
+                                                      item['subdistrict_name'] ??
+                                                          '',
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.grey[700],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ),

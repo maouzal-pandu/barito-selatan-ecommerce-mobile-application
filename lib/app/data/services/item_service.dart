@@ -8,7 +8,7 @@ class ItemsService {
   // final url = "http://202.157.177.43/umkm_barsel_main/product";
 
   // local address
-  final url = 'http://192.168.1.2/umkm_barsel/product';
+  final url = 'http://192.168.1.3/umkm_barsel/product';
 
   Future<List<Map<String, dynamic>>> category() async {
     try {
@@ -287,7 +287,7 @@ class ItemsService {
 
       for (int i = 0; i < images.length; i++) {
         req.files.add(
-          await http.MultipartFile.fromPath("image${i + 1}", images[i].path),
+          await http.MultipartFile.fromPath("image${i + 1}", images[i]),
         );
       }
 
@@ -298,7 +298,7 @@ class ItemsService {
       if (decodedJson['status'] == true) {
         return {'status': true, 'message': decodedJson['message']};
       } else {
-        return {'status': false};
+        return {'status': false, 'message': decodedJson['message']};
       }
     } catch (e) {
       throw Exception('Error : $e');
@@ -332,6 +332,152 @@ class ItemsService {
       }
     } catch (e) {
       throw Exception('Error : $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteProduct(String idProduct) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$url/deleteProduct'),
+        body: {'id_product': idProduct},
+      );
+
+      final decodedJson = jsonDecode(response.body);
+
+      if (decodedJson['status'] == true) {
+        return {'status': true, 'message': decodedJson['message']};
+      } else {
+        return {'status': false, 'message': decodedJson['message']};
+      }
+    } catch (e) {
+      throw Exception('Error from ItemService class | Error : $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchSelectedStoreProduct(
+    String idProduk,
+  ) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$url/storeProduct?id_produk=$idProduk'),
+      );
+
+      final decodedJson = jsonDecode(response.body);
+
+      if (decodedJson['status'] == true) {
+        return {'status': true, 'data': decodedJson['data']};
+      } else {
+        return {'status': false, 'message': decodedJson['message']};
+      }
+    } catch (e) {
+      throw Exception('Error from ItemService class | Error : $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteImageProduct(
+    String idProduk,
+    String filename,
+  ) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$url/deleteProductImage'),
+        body: {'id_produk': idProduk, 'filename': filename},
+      );
+
+      final decodedJson = jsonDecode(response.body);
+
+      if (decodedJson['status'] == true) {
+        return {'status': true};
+      } else {
+        return {'status': false};
+      }
+    } catch (e) {
+      throw Exception('Error from ItemService class | Error : $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteProductVariation(String idVariasi) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$url/deleteProductVariation'),
+        body: {'id_variasi': idVariasi},
+      );
+
+      final decodedJson = jsonDecode(response.body);
+
+      if (decodedJson['status'] == true) {
+        return {'status': true};
+      } else {
+        return {'status': false, 'message': decodedJson['message']};
+      }
+    } catch (e) {
+      throw Exception('Error from ItemService class | Error : $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> editStoreProduct({
+    required String idProduk,
+    required String productName,
+    required String productPrice,
+    required String productWeight,
+    required String productMinOrder,
+    required String productSku,
+    required String productDescription,
+    required String productUnit,
+    required String productType,
+    required String idKategoriProduk,
+    String? productPreOrderEstimation,
+    required String variationsJson,
+    required List<String> imagePaths,
+  }) async {
+    try {
+      final uri = Uri.parse('$url/editProduct');
+      final request = http.MultipartRequest('POST', uri);
+
+      // ================= REQUIRED FIELDS =================
+      request.fields['id_product'] = idProduk;
+      request.fields['product_name'] = productName;
+      request.fields['product_price'] = productPrice;
+      request.fields['product_weight'] = productWeight;
+      request.fields['product_min_order'] = productMinOrder;
+      request.fields['product_sku'] = productSku;
+      request.fields['product_description'] = productDescription;
+      request.fields['product_unit'] = productUnit;
+      request.fields['product_type'] = productType;
+      request.fields['id_kategori_produk'] = idKategoriProduk;
+
+      // ================= OPTIONAL =================
+      if (productPreOrderEstimation != null &&
+          productPreOrderEstimation.isNotEmpty) {
+        request.fields['product_pre_order_estimation'] =
+            productPreOrderEstimation;
+      }
+
+      // ================= VARIATIONS (JSON STRING) =================
+      request.fields['variations'] = variationsJson;
+
+      // ================= IMAGES =================
+      for (int i = 0; i < imagePaths.length; i++) {
+        final path = imagePaths[i];
+
+        // ❌ SKIP IMAGE LAMA
+        if (path.startsWith('http') || path.contains('/asset/foto_produk/')) {
+          continue;
+        }
+
+        request.files.add(
+          await http.MultipartFile.fromPath('image${i + 1}', path),
+        );
+      }
+
+      // ================= SEND =================
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+      final decoded = jsonDecode(responseBody);
+
+      return decoded;
+    } catch (e) {
+      throw Exception('Edit product failed: $e');
     }
   }
 }
