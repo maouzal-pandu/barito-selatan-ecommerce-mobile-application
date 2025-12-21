@@ -480,4 +480,66 @@ class ItemsService {
       throw Exception('Edit product failed: $e');
     }
   }
+
+  // Read or fetch cart products of a user
+  Future<Map<String, dynamic>> fetchCartProducts(String idKonsumen) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$url/fetchUserCartProducts'),
+        body: {'id_konsumen': idKonsumen},
+      );
+
+      final decodedJson = jsonDecode(response.body);
+
+      return decodedJson;
+    } catch (e) {
+      throw Exception('error : $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteCartProduct(
+    String idPenjualanDetail,
+  ) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$url/deleteProductCart'),
+        body: {'id_penjualan_detail': idPenjualanDetail},
+      );
+
+      final decodedJson = jsonDecode(response.body);
+
+      return decodedJson;
+    } catch (e) {
+      throw Exception('Error : $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> addProductToCart(
+    String idKonsumen,
+    String idProduk,
+    String jumlah,
+    String hargaJual, {
+    String? keteranganOrder,
+    String? satuan,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$url/addToCart'),
+        body: {
+          'id_produk': idProduk,
+          'id_konsumen': idKonsumen,
+          'satuan': satuan,
+          'keterangan_order': keteranganOrder,
+          'jumlah': jumlah,
+          'harga_jual': hargaJual,
+        },
+      );
+
+      final json = jsonDecode(response.body);
+
+      return json;
+    } catch (e) {
+      throw Exception('error : $e');
+    }
+  }
 }
