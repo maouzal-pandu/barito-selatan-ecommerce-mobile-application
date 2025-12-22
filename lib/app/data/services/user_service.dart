@@ -4,10 +4,10 @@ import 'package:http/http.dart' as http;
 
 class UserService {
   // server address
-  // final url = 'http://202.157.177.43/umkm_barsel_main/user';
+  final url = 'http://202.157.177.43/umkm_barsel_main/user';
 
   // local address
-  final url = 'http://192.168.1.3/umkm_barsel/user';
+  // final url = 'http://192.168.1.2/umkm_barsel/user';
 
   Future<Map<String, dynamic>> updateProfileUser(
     String id,

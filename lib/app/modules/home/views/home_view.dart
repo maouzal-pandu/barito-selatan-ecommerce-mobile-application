@@ -244,26 +244,29 @@ class HomeView extends GetView<HomeController> {
             ListTile(
               leading: const Icon(Icons.wallet_rounded),
               title: const Text('Belum Bayar'),
-              onTap: () =>
-                  Get.toNamed('/', arguments: controller.consumerId.value),
+              onTap: () => Get.toNamed(
+                '/belum-bayar',
+                arguments: controller.consumerId.value,
+              ),
             ),
 
             // Dikirim
             ListTile(
               leading: const Icon(Icons.delivery_dining_rounded),
               title: const Text('Dikirim'),
-              onTap: () =>
-                  Get.toNamed('/', arguments: controller.consumerId.value),
+              onTap: () => Get.toNamed(
+                '/dikirim',
+                arguments: controller.consumerId.value,
+              ),
             ),
 
             // Beri penilaian
-            ListTile(
-              leading: const Icon(Icons.stars_rounded),
-              title: const Text('Beri Penilaian'),
-              onTap: () =>
-                  Get.toNamed('/', arguments: controller.idReseller.value),
-            ),
-
+            // ListTile(
+            //   leading: const Icon(Icons.stars_rounded),
+            //   title: const Text('Beri Penilaian'),
+            //   onTap: () =>
+            //       Get.toNamed('/', arguments: controller.idReseller.value),
+            // ),
             const SizedBox(
               child: Padding(
                 padding: EdgeInsets.all(8.0),

@@ -251,7 +251,24 @@ class CartView extends GetView<CartController> {
                       ),
                     ),
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.toNamed(
+                          '/checkout',
+                          arguments: {
+                            'nama_reseller': product['nama_reseller'],
+                            'id_produk': product['id_produk'],
+                            'id_reseller': product['id_reseller'],
+                            'nama_produk': product['nama_produk'],
+                            'jumlah': product['jumlah'].toString(),
+                            'harga_jual': product['harga_jual'],
+                            'keterangan_order': product['keterangan_order'],
+                            'gambar': product['gambar'][0],
+                            'satuan': product['satuan'],
+                            'id_penjualan_detail':
+                                product['id_penjualan_detail'],
+                          },
+                        );
+                      },
                       child: const Text(
                         'Bayar',
                         style: TextStyle(color: Colors.white),

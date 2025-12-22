@@ -2,8 +2,14 @@ import 'package:get/get.dart';
 
 import '../modules/add-product/bindings/add_product_binding.dart';
 import '../modules/add-product/views/add_product_view.dart';
+import '../modules/belum_bayar/bindings/belum_bayar_binding.dart';
+import '../modules/belum_bayar/views/belum_bayar_view.dart';
 import '../modules/cart/bindings/cart_binding.dart';
 import '../modules/cart/views/cart_view.dart';
+import '../modules/checkout/bindings/checkout_binding.dart';
+import '../modules/checkout/views/checkout_view.dart';
+import '../modules/dikirim/bindings/dikirim_binding.dart';
+import '../modules/dikirim/views/dikirim_view.dart';
 import '../modules/edit-my-store/bindings/edit_my_store_binding.dart';
 import '../modules/edit-my-store/views/edit_my_store_view.dart';
 import '../modules/edit-profile/bindings/edit_profile_binding.dart';
@@ -14,6 +20,8 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
+import '../modules/menunggu-konfirmasi/bindings/menunggu_konfirmasi_binding.dart';
+import '../modules/menunggu-konfirmasi/views/menunggu_konfirmasi_view.dart';
 import '../modules/my-store/bindings/my_store_binding.dart';
 import '../modules/my-store/views/my_store_view.dart';
 import '../modules/my_store_profile/bindings/my_store_profile_binding.dart';
@@ -26,12 +34,16 @@ import '../modules/search_page/bindings/search_page_binding.dart';
 import '../modules/search_page/views/search_page_view.dart';
 import '../modules/search_result/bindings/search_result_binding.dart';
 import '../modules/search_result/views/search_result_view.dart';
+import '../modules/selesai/bindings/selesai_binding.dart';
+import '../modules/selesai/views/selesai_view.dart';
 import '../modules/settings/bindings/settings_binding.dart';
 import '../modules/settings/views/settings_view.dart';
 import '../modules/store/bindings/store_binding.dart';
 import '../modules/store/views/store_view.dart';
 import '../modules/store_products_category_result/bindings/store_products_category_result_binding.dart';
 import '../modules/store_products_category_result/views/store_products_category_result_view.dart';
+import '../modules/upload-bukti-pembayaran/bindings/upload_bukti_pembayaran_binding.dart';
+import '../modules/upload-bukti-pembayaran/views/upload_bukti_pembayaran_view.dart';
 import '../modules/user-account/bindings/user_account_binding.dart';
 import '../modules/user-account/views/user_account_view.dart';
 import '../modules/verify-otp/bindings/verify_otp_binding.dart';
@@ -143,6 +155,36 @@ class AppPages {
       name: _Paths.STORE_PRODUCTS_CATEGORY_RESULT,
       page: () => const StoreProductsCategoryResultView(),
       binding: StoreProductsCategoryResultBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHECKOUT,
+      page: () => const CheckoutView(),
+      binding: CheckoutBinding(),
+    ),
+    GetPage(
+      name: _Paths.BELUM_BAYAR,
+      page: () => const BelumBayarView(),
+      binding: BelumBayarBinding(),
+    ),
+    GetPage(
+      name: _Paths.DIKIRIM,
+      page: () => const DikirimView(),
+      binding: DikirimBinding(),
+    ),
+    GetPage(
+      name: _Paths.UPLOAD_BUKTI_PEMBAYARAN,
+      page: () => const UploadBuktiPembayaranView(),
+      binding: UploadBuktiPembayaranBinding(),
+    ),
+    GetPage(
+      name: _Paths.MENUNGGU_KONFIRMASI,
+      page: () => const MenungguKonfirmasiView(),
+      binding: MenungguKonfirmasiBinding(),
+    ),
+    GetPage(
+      name: _Paths.SELESAI,
+      page: () => const SelesaiView(),
+      binding: SelesaiBinding(),
     ),
   ];
 }

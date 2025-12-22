@@ -25,6 +25,12 @@ abstract class Routes {
   static const SEARCH_RESULT = _Paths.SEARCH_RESULT;
   static const STORE_PRODUCTS_CATEGORY_RESULT =
       _Paths.STORE_PRODUCTS_CATEGORY_RESULT;
+  static const CHECKOUT = _Paths.CHECKOUT;
+  static const BELUM_BAYAR = _Paths.BELUM_BAYAR;
+  static const DIKIRIM = _Paths.DIKIRIM;
+  static const UPLOAD_BUKTI_PEMBAYARAN = _Paths.UPLOAD_BUKTI_PEMBAYARAN;
+  static const MENUNGGU_KONFIRMASI = _Paths.MENUNGGU_KONFIRMASI;
+  static const SELESAI = _Paths.SELESAI;
 }
 
 abstract class _Paths {
@@ -49,4 +55,10 @@ abstract class _Paths {
   static const SEARCH_RESULT = '/search-result';
   static const STORE_PRODUCTS_CATEGORY_RESULT =
       '/store-products-category-result';
+  static const CHECKOUT = '/checkout';
+  static const BELUM_BAYAR = '/belum-bayar';
+  static const DIKIRIM = '/dikirim';
+  static const UPLOAD_BUKTI_PEMBAYARAN = '/upload-bukti-pembayaran';
+  static const MENUNGGU_KONFIRMASI = '/menunggu-konfirmasi';
+  static const SELESAI = '/selesai';
 }

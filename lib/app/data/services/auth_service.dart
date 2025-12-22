@@ -4,10 +4,10 @@ import 'package:http/http.dart' as http;
 
 class AuthService {
   // server address
-  // final url = 'http://202.157.177.43/umkm_barsel_main/mobauth';
+  final url = 'http://202.157.177.43/umkm_barsel_main/mobauth';
 
   // local address
-  final url = 'http://192.168.1.3/umkm_barsel/mobauth';
+  // final url = 'http://192.168.1.2/umkm_barsel/mobauth';
 
   Future<Map<String, dynamic>> login(String email, String pass) async {
     try {

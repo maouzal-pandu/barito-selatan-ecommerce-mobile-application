@@ -145,44 +145,6 @@ class MyStoreView extends GetView<MyStoreController> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        // Not paid yet
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.green[800],
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(16),
-                                  ),
-                                ),
-                                child: IconButton(
-                                  onPressed: () {},
-                                  icon: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.amber,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(16),
-                                      ),
-                                    ),
-                                    child: const Icon(
-                                      Icons.money_off_csred_rounded,
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              const Text(
-                                'Belum Di Bayar',
-                                style: TextStyle(fontSize: 12),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        ),
-
                         // Waiting confirmation reseller
                         Expanded(
                           child: Column(
@@ -196,7 +158,8 @@ class MyStoreView extends GetView<MyStoreController> {
                                   ),
                                 ),
                                 child: IconButton(
-                                  onPressed: () {},
+                                  onPressed: () =>
+                                      Get.toNamed('/menunggu-konfirmasi'),
                                   icon: const Icon(
                                     Icons.timelapse,
                                     color: Colors.amber,
@@ -213,63 +176,34 @@ class MyStoreView extends GetView<MyStoreController> {
                           ),
                         ),
 
-                        // Dikirim
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.green[800],
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(16),
-                                  ),
-                                ),
-                                child: IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(
-                                    Icons.delivery_dining_rounded,
-                                    color: Colors.amber,
-                                  ),
-                                ),
-                              ),
-
-                              const Text(
-                                'Dikirim',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            ],
-                          ),
-                        ),
-
                         // Selesai
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.green[800],
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(16),
-                                  ),
-                                ),
-                                child: IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(
-                                    Icons.star_rounded,
-                                    color: Colors.amber,
-                                  ),
-                                ),
-                              ),
+                        // Expanded(
+                        //   child: Column(
+                        //     mainAxisAlignment: MainAxisAlignment.start,
+                        //     children: [
+                        //       Container(
+                        //         decoration: BoxDecoration(
+                        //           color: Colors.green[800],
+                        //           borderRadius: BorderRadius.all(
+                        //             Radius.circular(16),
+                        //           ),
+                        //         ),
+                        //         child: IconButton(
+                        //           onPressed: () => Get.toNamed('/selesai'),
+                        //           icon: const Icon(
+                        //             Icons.star_rounded,
+                        //             color: Colors.amber,
+                        //           ),
+                        //         ),
+                        //       ),
 
-                              const Text(
-                                'Selesai',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            ],
-                          ),
-                        ),
+                        //       const Text(
+                        //         'Selesai',
+                        //         style: TextStyle(fontSize: 12),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

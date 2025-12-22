@@ -46,6 +46,7 @@ class CartController extends GetxController {
 
       if (response['status'] == true) {
         products.assignAll(List<Map<String, dynamic>>.from(response['data']));
+        print(response);
       } else {
         products.clear();
         Get.snackbar('Info', response['message']);

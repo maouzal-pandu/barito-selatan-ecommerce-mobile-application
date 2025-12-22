@@ -1108,6 +1108,82 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                             children: [
                               const SizedBox(height: 20),
 
+                              // total yang harus dibayarkan
+                              Obx(
+                                () => Text(
+                                  NumberFormat.currency(
+                                    locale: 'ID',
+                                    symbol: 'Rp.',
+                                  ).format(controller.totalHargaProduk),
+                                  style: TextStyle(
+                                    color: Colors.amber,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              IntrinsicWidth(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(),
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(16),
+                                    ),
+                                  ),
+
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          if (controller.jumlahPesan.value >
+                                              1) {
+                                            controller.jumlahPesan.value--;
+                                          }
+                                        },
+                                        icon: const Icon(
+                                          Icons.remove,
+                                          color: Colors.red,
+                                        ),
+                                      ),
+
+                                      const SizedBox(
+                                        height: 30,
+                                        child: VerticalDivider(),
+                                      ),
+
+                                      Obx(
+                                        () => Text(
+                                          controller.jumlahPesan.value
+                                              .toString(),
+                                        ),
+                                      ),
+
+                                      const SizedBox(
+                                        height: 30,
+                                        child: VerticalDivider(),
+                                      ),
+
+                                      IconButton(
+                                        onPressed: () =>
+                                            controller.jumlahPesan.value++,
+                                        icon: const Icon(
+                                          Icons.add_rounded,
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 20),
+
                               ...controller.productVariations.entries.map((e) {
                                 final variation = e.key;
                                 final variationValue = e.value;
@@ -1127,35 +1203,53 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                                           color: Colors.grey[800],
                                         ),
                                       ),
+
                                       const SizedBox(height: 6),
 
                                       Wrap(
                                         spacing: 8,
                                         children: variationValue.map((item) {
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 6,
-                                            ),
-                                            child: TextButton(
+                                          return Obx(() {
+                                            final isSelected =
+                                                controller
+                                                    .selectedVariation[variation]?['value'] ==
+                                                item['value'];
+
+                                            return TextButton(
                                               style: ButtonStyle(
                                                 backgroundColor:
                                                     WidgetStatePropertyAll(
-                                                      Colors.grey[200],
+                                                      isSelected
+                                                          ? Colors.amber
+                                                          : Colors.grey[200],
                                                     ),
                                                 shape: WidgetStatePropertyAll(
                                                   RoundedRectangleBorder(
                                                     borderRadius:
-                                                        BorderRadiusGeometry.circular(
+                                                        BorderRadius.circular(
                                                           12,
                                                         ),
                                                   ),
                                                 ),
                                               ),
-                                              onPressed: () {},
-                                              child: Text(item["value"] ?? "-"),
-                                            ),
-                                          );
+                                              onPressed: () =>
+                                                  controller.selectVariation(
+                                                    variation,
+                                                    item,
+                                                  ),
+                                              child: Text(
+                                                item["value"] ?? "-",
+                                                style: TextStyle(
+                                                  color: isSelected
+                                                      ? Colors.black
+                                                      : Colors.black87,
+                                                  fontWeight: isSelected
+                                                      ? FontWeight.bold
+                                                      : FontWeight.normal,
+                                                ),
+                                              ),
+                                            );
+                                          });
                                         }).toList(),
                                       ),
                                     ],
@@ -1172,11 +1266,30 @@ class ProductDetailsView extends GetView<ProductDetailsController> {
                                     backgroundColor: Colors.amber,
                                   ),
                                   onPressed: () {
-                                    // controller.addToCart();
-                                    Navigator.pop(context);
+                                    Get.toNamed(
+                                      '/checkout',
+                                      arguments: {
+                                        'nama_reseller': controller
+                                            .storeData['nama_reseller'],
+                                        'id_produk':
+                                            controller.data['id_produk'],
+                                        'id_reseller':
+                                            controller.storeData['id_reseller'],
+                                        'nama_produk':
+                                            controller.data['nama_produk'],
+                                        'jumlah': controller.jumlahPesan.value
+                                            .toString(),
+                                        'harga_jual':
+                                            controller.totalHargaProduk,
+                                        'keterangan_order':
+                                            controller.keteranganVariasi,
+                                        'gambar': controller.productImages[0],
+                                        'satuan': controller.data['satuan'],
+                                      },
+                                    );
                                   },
                                   child: Text(
-                                    "Beli sekarang",
+                                    "Beli langsung",
                                     style: TextStyle(color: Colors.black),
                                   ),
                                 ),
