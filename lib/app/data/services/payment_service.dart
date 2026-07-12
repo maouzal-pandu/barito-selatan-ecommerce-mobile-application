@@ -4,11 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class PaymentService {
-  // server address
-  final url = 'http://202.157.177.43/umkm_barsel_main/payment';
-
-  // local address
-  // final url = 'http://192.168.1.2/umkm_barsel/payment';
+  final url = 'http://192.168.1.2/umkm_barsel/payment';
 
   Future<Map<String, dynamic>> fetchLokasiCOD() async {
     try {
